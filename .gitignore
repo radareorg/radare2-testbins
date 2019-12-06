@@ -1,0 +1,10 @@
+.*.swp
+*.un~
+*.o
+*.tmp
+.DS_Store
+
+/other/ragg2/hi.c.o
+/other/ragg2/hi.c.text
+/other/ragg2/hi.c.s
+
