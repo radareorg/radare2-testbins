@@ -1,0 +1,8 @@
+#!/bin/sh
+[ -z "${SDK}" ] && SDK="${HOME}/Downloads/android-sdk-macosx/"
+echo FILES="$*"
+JAR="`echo "$1" | sed -e 's,\.java,.jar,g'`"
+CLS="`echo "$*" | sed -e 's,\.java,.class,g'`"
+javac -target 1.6 -source 1.6 $* || exit 1
+jar -cvf "$JAR" $CLS || exit 1
+exec ${SDK}/build-tools/23.0.0/dx --dex --output=classes.dex "${JAR}"

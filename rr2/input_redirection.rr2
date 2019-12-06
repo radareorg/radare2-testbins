@@ -1,0 +1,2 @@
+program=../../bins/elf/two-words
+stdin=!python -c "print('foo\nbar\nfoobar')"

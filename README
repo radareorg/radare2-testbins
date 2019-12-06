@@ -1,0 +1,16 @@
+README
+======
+
+binaries/ contains sample binaries used for tests. To create reproducible tests on
+all platforms the binaries itself are stored in the repository. If it's
+necessary to recreate them, run `make clean; make`.
+
+Requirements
+------------
+
+The following programs are necessary to _rebuild_ the binaries. The test suite
+works fine without them.
+
+ * make
+ * nasm
+ * GNU ld with i386 and x86_64 emulation mode
