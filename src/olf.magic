@@ -1,0 +1,6 @@
+0	string		\177ELF		OLF
+>4	byte		0		invalid class
+>4	byte		1		32-bit
+>4	byte		2		64-bit
+>5	byte		0		invalid byte order
+>5	byte		1		LSB
