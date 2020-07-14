@@ -4,3 +4,4 @@
 >4	byte		2		64-bit
 >5	byte		0		invalid byte order
 >5	byte		1		LSB
+>5	byte		?		Unknown endian
