@@ -1,0 +1,17 @@
+name: Allow only Additions
+
+on:
+  pull_request:
+    branches:
+    - master
+
+jobs:
+  check-diff:
+    name: Check diff
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Fetch Base
+        run: git fetch --depth=1 origin ${{ github.base_ref }}:pr-base
+      - name: Check Diff
+        run: ./check-diff.sh pr-base
