@@ -1,0 +1,221 @@
+15650ZOS V2.3 z/OS XL C                                           ./prueba.c                      04/30/21 09:45:24   Page     1
+ 
+ 
+                                       * * * * *   P R O L O G   * * * * *
+ 
+  Compile Time Library . . . . . . : 42030000
+  Command options:
+     Program name. . . . . . . . . : ./prueba.c
+     Compiler options. . . . . . . : *NOGONUMBER *NOALIAS    *RENT       *TERMINAL   *NOUPCONV   *NOSOURCE   *LIST       
+                                   : *NOXREF     *NOAGG      *NOPPONLY   *NOEXPMAC   *NOSHOWINC  *NOOFFSET   *MEMORY     
+                                   : *NOSSCOMM   *NOSHOWMACROS           *SKIPSRC(SHOW)          *NOREPORT   *NOMAKEDEP  
+                                   : *PREFETCH   *THREADED   
+                                   : *LONGNAME   *START      *EXECOPS    *ARGPARSE   *NOEXPORTALL*NODLL(NOCALLBACKANY)   
+                                   : *NOLIBANSI  *NOWSIZEOF  *REDIR      *ANSIALIAS  *DIGRAPH    *NOROCONST  *ROSTRING   
+                                   : *TUNE(10)   *ARCH(10)   *SPILL(128) *MAXMEM(2097152)        *NOCOMPACT  
+                                   : *TARGET(LE,CURRENT)     *FLAG(I)    *NOTEST(SYM,BLOCK,LINE,PATH,HOOK)   *NOOPTIMIZE 
+                                   : *NOINLINE(AUTO,NOREPORT,100,1000)   *NESTINC(255)           *BITFIELD(UNSIGNED)     
+                                   : *NOINFO
+                                   : *NODFP      
+                                   : *NOVECTOR
+                                   : *FLOAT(HEX,FOLD,NOMAF,AFP(NOVOLATILE))          *ROUND(Z)   
+                                   : *STRICT
+                                   : *NOSTACKPROTECT
+                                   : *NOCOMPRESS *NOSTRICT_INDUCTION     *AGGRCOPY(NOOVERLAP)    *CHARS(UNSIGNED)
+                                   : *NOIGNERRNO 
+                                   : *NOINITAUTO
+                                   : *NOCSECT
+                                   : *NOEVENTS
+                                   : *ASSERT(RESTRICT)
+                                   : *NORESTRICT
+                                   : *OBJECT(./prueba.o)
+                                   : *NOGENASM
+                                   : *NOOPTFILE
+                                   : *NOSERVICE
+                                   : *OE
+                                   : *NOIPA
+                                   : *SEARCH(/usr/include/, /usr/lpp/cbclib/include/, //'SYS1.SCEEH.+')
+                                   : *NOLSEARCH
+                                   : *LOCALE     *HALT(16)   *PLIST(HOST)
+                                   : *NOCONVLIT
+                                   : *NOASCII    
+                                   : *NOGOFF     *ILP32      *NOWARN64   *NOHGPR     *NOHOT      *NOMETAL    *NOARMODE   
+                                   : *NOXPLINK(NOBACKCHAIN,NOSTOREARGS,NOCALLBACK,GUARD,OSCALL(NOSTACK))
+                                   : *ENUMSIZE(SMALL)
+                                   : *NOHALTONMSG
+                                   : *NOSUPPRESS
+                                   : *NORTCHECK
+                                   : *NODEBUG
+                                   : *NOSQL
+                                   : *NOCICS
+                                   : *UNROLL(AUTO)
+                                   : *KEYWORD()
+                                   : *NOKEYWORD(asm,typeof)
+                                   : *NOSEVERITY
+                                   : *NODSAUSER
+                                   : *NOINCLUDE
+                                   : *NOSMP
+                                   : *SYSSTATE(NOASCENV,OSREL(NONE))
+                                   : *NOFUNCEVENT
+                                   : *NOASM 
+15650ZOS V2.3 z/OS XL C                                           ./prueba.c                      04/30/21 09:45:24   Page     2
+ 
+ 
+                                       * * * * *   P R O L O G   * * * * *
+ 
+                                   : *NOASMLIB
+                                   : DEFINE(_OPEN_DEFAULT=1)
+                                   : DEFINE(errno=(*__errno()))
+     Version Macros. . . . . . . . : __COMPILER_VER__=0x42030000 __LIBREL__=0x42030000 __TARGET_LIB__=0x42030000
+     Language level. . . . . . . . : *ANSI:NOTEXTAFTERENDIF  
+     Source margins. . . . . . . . :  
+       Varying length. . . . . . . : 1 - 32760
+       Fixed length. . . . . . . . : 1 - 32760
+     Sequence columns. . . . . . . :  
+       Varying length. . . . . . . : none
+       Fixed length. . . . . . . . : 73 - 80
+     Locale Name . . . . . . . . . : POSIX
+     Code Set. . . . . . . . . . . : IBM-1047
+ 
+                                * * * * *   E N D   O F   P R O L O G   * * * * *
+15650ZOS V2.3 z/OS XL C                                           ./prueba.c                      04/30/21 09:45:24   Page     3
+ 
+ 
+                         * * * * *   I N C L U D E S   * * * * *
+ 
+ INCLUDE FILES  ---  FILE#   NAME
+ 
+                        1   /usr/include/stdio.h
+                        2   /usr/include/features.h
+                        3   /usr/include/sys/types.h
+ 
+                         * * * * *   E N D   O F   I N C L U D E S   * * * * *
+15650ZOS V2.3 z/OS XL C                                           ./prueba.c                      04/30/21 09:45:24   Page     4    
+ 
+ OFFSET OBJECT CODE        LINE#  FILE#    P S E U D O   A S S E M B L Y   L I S T I N G
+ 
+                           Timestamp and Version Information
+ 000000  F2F0  F2F1                                            =C'2021'           Compiled Year
+ 000004  F0F4  F3F0                                            =C'0430'           Compiled Date MMDD
+ 000008  F0F9  F4F5  F2F4                                      =C'094524'         Compiled Time HHMMSS
+ 00000E  F0F2  F0F3  F0F0                                      =C'020300'         Compiler Version
+ 
+ 000014  0072  ****                                            AL2(114),C'...'    Saved Options String
+                           Timestamp and Version End
+ 
+15650ZOS V2.3 z/OS XL C                                           ./prueba.c: main                04/30/21 09:45:24   Page     5    
+ 
+ OFFSET OBJECT CODE        LINE#  FILE#    P S E U D O   A S S E M B L Y   L I S T I N G
+ 
+                           000001 |       *  #include <stdio.h>
+                           000002 |       *  
+                           000003 |       *  int main()
+ 000088                    000003 |        main       DS       0D
+ 000088  47F0  F024        000003 |                   B        36(,r15)
+ 00008C  01C3C5C5                                              CEE eyecatcher
+ 000090  000000A0                                              DSA size
+ 000094  00000090                                              =A(PPA1-main)
+ 000098  47F0  F001        000003 |                   B        1(,r15)
+ 00009C  58F0  C31C        000003 |                   L        r15,796(,r12)
+ 0000A0  184E              000003 |                   LR       r4,r14
+ 0000A2  05EF              000003 |                   BALR     r14,r15
+ 0000A4  00000000                                              =F'0'
+ 0000A8  A7F4  000C        000003 |                   J        *+24
+ 0000AC  90E5  D00C        000003 |                   STM      r14,r5,12(r13)
+ 0000B0  58E0  D04C        000003 |                   L        r14,76(,r13)
+ 0000B4  4100  E0A0        000003 |                   LA       r0,160(,r14)
+ 0000B8  5500  C314        000003 |                   CL       r0,788(,r12)
+ 0000BC  A724  FFF0        000003 |                   JH       *-32
+ 0000C0  58F0  C280        000003 |                   L        r15,640(,r12)
+ 0000C4  90F0  E048        000003 |                   STM      r15,r0,72(r14)
+ 0000C8  9210  E000        000003 |                   MVI      0(r14),16
+ 0000CC  50D0  E004        000003 |                   ST       r13,4(,r14)
+ 0000D0  18DE              000003 |                   LR       r13,r14
+ 0000D2  C030  0000  0019  000003 |                   LARL     r3,F'25'
+ 0000D8                    End of Prolog
+ 
+ 0000D8  C050  0000  0018  000000 |                   LARL     r5,F'24'
+                           000004 |       *  {
+                           000005 |       *  	printf("Hola mundo\n");
+ 0000DE  58F0  3000        000005 |                   L        r15,=V(printf)(,r3,0)
+ 0000E2  1805              000005 |                   LR       r0,r5
+ 0000E4  4110  D098        000005 |                   LA       r1,#MX_TEMP1(,r13,152)
+ 0000E8  5000  D098        000005 |                   ST       r0,#MX_TEMP1(,r13,152)
+ 0000EC  0DEF              000005 |                   BASR     r14,r15
+                           000006 |       *  	return(0);
+ 0000EE  41F0  0000        000006 |                   LA       r15,0
+                           000007 |       *  }
+ 0000F2                    000007 |        @1L1       DS       0H
+ 
+ 0000F2                    Start of Epilog
+ 0000F2  180D              000007 |                   LR       r0,r13
+ 0000F4  58D0  D004        000007 |                   L        r13,4(,r13)
+ 0000F8  58E0  D00C        000007 |                   L        r14,12(,r13)
+ 0000FC  9825  D01C        000007 |                   LM       r2,r5,28(r13)
+ 000100  051E              000007 |                   BALR     r1,r14
+ 000102  0707              000007 |                   NOPR     7
+ 
+ 000104                    Start of Literals
+ 000104  00000000                                              =V(printf)
+ 000108                    End of Literals
+ 
+                           ***   General purpose registers used: 1101110000001111
+                           ***   Floating point  registers used: 1111111100000000
+                           ***   Size of register spill area: 128(max) 0(used)
+                           ***   Size of dynamic storage: 160
+15650ZOS V2.3 z/OS XL C                                           ./prueba.c: main                04/30/21 09:45:24   Page     6    
+ 
+ OFFSET OBJECT CODE        LINE#  FILE#    P S E U D O   A S S E M B L Y   L I S T I N G
+ 
+                           ***   Size of executable code: 124
+ 
+                           Constant Area
+ 000108  C8969381 4094A495 84961500             |Hola mundo..    |
+15650ZOS V2.3 z/OS XL C                                           ./prueba.c                      04/30/21 09:45:24   Page     7    
+ 
+ OFFSET OBJECT CODE        LINE#  FILE#    P S E U D O   A S S E M B L Y   L I S T I N G
+ 
+                           PPA1: Entry Point Constants
+ 000118  1CCEA106                                              =F'483303686'      Flags
+ 00011C  000000D0                                              =A(PPA2-main)
+ 000120  00000000                                              =F'0'              No PPA3
+ 000124  00000000                                              =F'0'              No EPD
+ 000128  FF000000                                              =F'-16777216'      Register save mask
+ 00012C  00000000                                              =F'0'              Member flags
+ 000130  90                                                    =AL1(144)          Flags
+ 000131  000000                                                =AL3(0)            Callee's DSA use/8
+ 000134  0040                                                  =H'64'             Flags
+ 000136  0012                                                  =H'18'             Offset/2 to CDL
+ 000138  00000000                                              =F'0'              Reserved
+ 00013C  5000003E                                              =F'1342177342'     CDL function length/2
+ 000140  FFFFFF70                                              =F'-144'           CDL function EP offset
+ 000144  38280000                                              =F'942145536'      CDL prolog
+ 000148  40090035                                              =F'1074331701'     CDL epilog
+ 00014C  00000000                                              =F'0'              CDL end
+ 000150  0004  ****                                            AL2(4),C'main'
+                           PPA1 End
+ 
+                           PPA2: Compile Unit Block
+ 000158  0300  2203                                            =F'50340355'       Flags
+ 00015C  FFFF  FEA8                                            =A(CEESTART-PPA2)
+ 000160  0000  0000                                            =F'0'              No PPA4
+ 000164  FFFF  FEA8                                            =A(TIMESTMP-PPA2)
+ 000168  0000  0000                                            =F'0'              No primary
+ 00016C  0200  0000                                            =F'33554432'       Flags
+                           PPA2 End
+15650ZOS V2.3 z/OS XL C                                           ./prueba.c                      04/30/21 09:45:24   Page     8    
+ 
+                                   E X T E R N A L   S Y M B O L   D I C T I O N A R Y
+ 
+                       TYPE  ID  ADDR    LENGTH            NAME
+ 
+                        SD    1 000000   000170            @STATICP
+                        LD    0 000088   000001            main
+                        ER    2 000000                     CEESG003
+                        ER    3 000000                     printf
+                        ER    4 000000                     CEESTART
+                        SD    5 000000   000008            @@PPA2
+                        SD    6 000000   00000C            CEEMAIN
+                        ER    7 000000                     EDCINPL
+ 
+                              * * * * *   E N D   O F   C O M P I L A T I O N   * * * * *
