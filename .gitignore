@@ -2,7 +2,7 @@
 *.un~
 *.tmp
 .DS_Store
-/other/ragg2/hi.c.o
-/other/ragg2/hi.c.text
-/other/ragg2/hi.c.s
-/s390/zos/prueba/prueba.o
+other/ragg2/hi.c.o
+other/ragg2/hi.c.text
+other/ragg2/hi.c.s
+s390/zos/prueba/prueba.o
