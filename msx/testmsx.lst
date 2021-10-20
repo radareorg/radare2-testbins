@@ -1,0 +1,545 @@
+Sections:
+00: "seg8000" (8000-805F)
+
+
+Source: "main.z80"
+                	     1:     org ROMADDR
+                	     2: 
+                	     3: ;-----------------------------------------------
+                	     4: ; Includes
+                	     5: ;-----------------------------------------------
+                	     6: 	
+                	     7: 	include "romheader.z80"
+
+Source: "romheader.z80"
+00:8000 4142    	     1: 	db "AB"
+00:8002 2A80    	     2: 	dw MAIN
+00:8004 0000    	     3: 	dw &0000
+00:8006 0000    	     4: 	dw &0000
+00:8008 0000    	     5: 	dw &0000
+00:800A 0000    	     6: 	dw &0000
+00:800C 0000    	     7: 	dw &0000
+00:800E 0000    	     8: 	dw &0000
+                	     9: 
+
+Source: "main.z80"
+                	     8: 	include "systemvars.z80"
+
+Source: "systemvars.z80"
+                	     1: ;-----------------------------------------------
+                	     2: ; System Variables
+                	     3: ;-----------------------------------------------
+                	     4: 
+                	     5: ; Located in Main ROM
+                	     6: CHKRAM:        equ &0000    ; RST0: tests RAM and sets RAM slot for the system      
+                	     7: SYNCHR:        equ &0008    ; RST1: tests whether the character of [HL] is the specified      
+                	     8: RDSLT:         equ &000c    ; selects the slot corresponding to the value of A and reads      
+                	     9: CHRGTR:        equ &0010    ; RST2: gets a character or a token from BASIC text      
+                	    10: WRSLT:         equ &0014    ; selects the slot corresponding to the value of A and writes one       
+                	    11: OUTDO:         equ &0018    ; RST3: sends the value to current device      
+                	    12: CALSLT:        equ &001c    ; calls the routine in another slot inter-slot call      
+                	    13: DCOMPR:        equ &0020    ; RST4: compares the contents of HL and DE      
+                	    14: ENASLT:        equ &0024    ; selects the slot corresponding to the value of A and          
+                	    15: GETYPR:        equ &0028    ; RST5: returns the type of DAC decimal accumulator         
+                	    16: CALLF:         equ &0030    ; RST6: calls the routine in another slot.         
+                	    17: KEYINT:        equ &0038    ; RST7: executes the timer interrupt process routine         
+                	    18: INITIO:        equ &003b    ; initialises the device         
+                	    19: INIFNK:        equ &003e    ; initialises the contents of function keys         
+                	    20: DISSCR:        equ &0041    ; inhibits the screen display         
+                	    21: ENASCR:        equ &0044    ; displays the screen         
+                	    22: WRTVDP:        equ &0047    ; writes data in the VDP register         
+                	    23: RDVRM:         equ &004a    ; reads the contents of VRAM.         
+                	    24: WRTVRM:        equ &004d    ; writes data in VRAM         
+                	    25: SETRD:         equ &0050    ; sets VRAM address to VDP and enables it to be read.         
+                	    26: SETWRT:        equ &0053    ; sets VRAM address to VDP and enables it to be written         
+                	    27: FILVRM:        equ &0056    ; fills the specified VRAM area with the same data.         
+                	    28: LDIRMV:        equ &0059    ; block transfer from VRAM to memory         
+                	    29: LDIRVM:        equ &005c    ; block transfer from memory to VRAM         
+                	    30: CHGMOD:        equ &005f    ; changes the screen mode. The palette is not initialis         
+                	    31: CHGCLR:        equ &0062    ; changes the screen colour         
+                	    32: NMI:           equ &0066    ; executes NMI Non-Maskable Interrupt handling routine         
+                	    33: CLRSPR:        equ &0069    ; initialises all sprites.         
+                	    34: INITXT:        equ &006c    ; initialises the screen to TEXT1 mode 40 x 24         
+                	    35: INIT32:        equ &006f    ; initialises the screen to GRAPHIC1 mode 32x24         
+                	    36: INIGRP:        equ &0072    ; initialises the screen to the high-resolution graphic         
+                	    37: INIMLT:        equ &0075    ; initialises the screen to MULTI colour mode.         
+                	    38: SETTXT:        equ &0078    ; set only VDP in TEXT1 mode 40x24         
+                	    39: SETT32:        equ &007b    ; set only VDP in GRAPHIC1 mode 32x24         
+                	    40: SETGRP:        equ &007e    ; set only VDP in GRAPHIC2 mode         
+                	    41: SETMLT:        equ &0081    ; set only VDP in MULTI colour mode         
+                	    42: CALPAT:        equ &0084    ; returns the address of the sprite generator table         
+                	    43: CALATR:        equ &0087    ; returns the address of the sprite attribute table         
+                	    44: GSPSIZ:        equ &008a    ; returns the current sprite size         
+                	    45: GRPPRT:        equ &008d    ; displays a character on the graphic screen         
+                	    46: GICINI:        equ &0090    ; initialises PSG and sets the initial value for the PLAY statement         
+                	    47: WRTPSG:        equ &0093    ; writes data in the PSG register         
+                	    48: RDPSG:         equ &0096    ; reads the PSG register value         
+                	    49: STRTMS:        equ &0099    ; tests whether the PLAY statement is being executed as a background task.         
+                	    50: CHSNS:         equ &009c    ; tests the status of the keyboard buffer         
+                	    51: CHGET:         equ &009f    ; one character input waiting         
+                	    52: CHPUT:         equ &00a2    ; displays the character
+                	    53: LPTOUT:        equ &00a5    ; sends one character to the printer         
+                	    54: LPTSTT:        equ &00a8    ; tests the printer status         
+                	    55: CNVCHR:        equ &00ab    ; test for the graphic header and transforms the code         
+                	    56: PINLIN:        equ &00ae    ; stores in the specified buffer the character codes input till STOP key.         
+                	    57: INLIN:         equ &00b1    ; same as PINLIN except that AUTFLG F6AAH is set         
+                	    58: QINLIN:        equ &00b4    ; executes INLIN with displaying "?" and one space         
+                	    59: BREAKX:        equ &00b7    ; tests Ctrl-STOP key. In this routine, interrupts are inhibited.         
+                	    60: ISCNTC:        equ &00ba             
+                	    61: CKCNTC:        equ &00bd             
+                	    62: BEEP:          equ &00c0    ; generates BEEP         
+                	    63: CLS:           equ &00c3    ; clears the screen         
+                	    64: POSIT:         equ &00c6    ; moves the cursor         
+                	    65: FNKSB:         equ &00c9    ; tests whether the function key display is active FNKFLG                         
+                	    66: ERAFNK:        equ &00cc    ; erases the function key display         
+                	    67: DSPFNK:        equ &00cf    ; displays the function keys         
+                	    68: TOTEXT:        equ &00d2    ; forces the screen to be in the text mode         
+                	    69: GTSTCK:        equ &00d5    ; returns the joystick status         
+                	    70: GTTRIG:        equ &00d8    ; returns the trigger button status         
+                	    71: GTPAD:         equ &00db    ; returns the touch pad status         
+                	    72: GTPDL:         equ &00de    ; returns the paddle value         
+                	    73: TAPION:        equ &00e1    ; reads the header block after turning the cassette motor ON.         
+                	    74: TAPIN:         equ &00e4    ; reads data from the tape         
+                	    75: TAPIOF:        equ &00e7    ; stops reading the tape         
+                	    76: TAPOON:        equ &00ea    ; writes the header block after turning the cassette motor ON         
+                	    77: TAPOUT:        equ &00ed    ; writes data on the tape         
+                	    78: TAPOOF:        equ &00f0    ; stops writing to the tape         
+                	    79: STMOTR:        equ &00f3    ; sets the cassette motor action         
+                	    80: LFTQ:          equ &00f6             
+                	    81: PUTQ:          equ &00f9             
+                	    82: RIGHTC:        equ &00fc             
+                	    83: LEFTC:         equ &00ff             
+                	    84: UPC:           equ &0102             
+                	    85: TUPC:          equ &0105             
+                	    86: DOWNC:         equ &0108             
+                	    87: TDOWNC:        equ &010b             
+                	    88: SCALXY:        equ &010e             
+                	    89: MAPXY:         equ &0111             
+                	    90: FETCHC:        equ &0114             
+                	    91: STOREC:        equ &0117             
+                	    92: SETATR:        equ &011a             
+                	    93: READC:         equ &011d             
+                	    94: SETC:          equ &0120             
+                	    95: NSETCX:        equ &0123             
+                	    96: GTASPC:        equ &0126             
+                	    97: PNTINI:        equ &0129             
+                	    98: SCANR:         equ &012c             
+                	    99: SCANL:         equ &012f             
+                	   100: CHGCAP:        equ &0132    ; alternates the CAP lamp status        
+                	   101: CHGSND:        equ &0135    ; alternates the 1-bit sound port status        
+                	   102: RSLREG:        equ &0138    ; reads the contents of current output to the basic slot register        
+                	   103: WSLREG:        equ &013b    ; writes to the primary slot register        
+                	   104: RDVDP:         equ &013e    ; reads VDP status register        
+                	   105: SNSMAT:        equ &0141    ; reads the value of the specified line from the keyboard matrix        
+                	   106: PHYDIO:        equ &0144    ; Physical input/output for disk devices        
+                	   107: FORMAT:        equ &0147             
+                	   108: ISFLIO:        equ &014a    ; tests whether the device is active         
+                	   109: OUTDLP:        equ &014d    ; printer output         
+                	   110: GETVCP:        equ &0150             
+                	   111: GETVC2:        equ &0153             
+                	   112: KILBUF:        equ &0156    ; clears the keyboard buffer         
+                	   113: CALBAS:        equ &0159    ; executes inter-slot call to the routine in BAS         
+                	   114: 
+                	   115: ; MSX2
+                	   116: SUBROM:        equ &015c    ; executes inter-slot call to SUB-ROM           
+                	   117: EXTROM:        equ &015f    ; executes inter-slot call to SUB-ROM
+                	   118: CHKSLZ:        equ &0162    
+                	   119: CHKNEW:        equ &0165             
+                	   120: EOL:           equ &0168    ; deletes to the end of the line         
+                	   121: BIGFIL:        equ &016b    ; same function as FILVRM
+                	   122: NSETRD:        equ &016e    ; enables VRAM to be read by setting the address         
+                	   123: NSTWRT:        equ &0171    ; enables VRAM to be written by setting the address
+                	   124: NRDVRM:        equ &0174    ; reads the contents of VRAM           
+                	   125: NWRVRM:        equ &0177    ; writes data in VRAM
+                	   126: RDRES:         equ &017a             
+                	   127: WRRES:         equ &017d            
+                	   128: CHGCPU:        equ &0180             
+                	   129: GETCPU:        equ &0183             
+                	   130: PCMPLY:        equ &0186             
+                	   131: PCMREC:        equ &0189             
+                	   132: 
+                	   133: ; Located in Main ROM
+                	   134: CGTABL:        equ &0004    ; Base address of the MSX character set in ROM
+                	   135: VDP.DR:        equ &0006    ; Base port address for VDP data read
+                	   136: VDP.DW:        equ &0007    ; Base port address for VDP data read
+                	   137: 
+                	   138: ; Interslot
+                	   139: RDPRIM:        equ &f380    ; Routine that reads from a primary slot
+                	   140: WRPRIM:        equ &f385    ; Routine that writes to a primary slot
+                	   141: CLPRIM:        equ &f38c    ; Routine that calls a routine in a primary slot
+                	   142: 
+                	   143: ; USR
+                	   144: USRTAB:        equ &f39a    ; Address to call with Basic USR0
+                	   145: ;				   &f39c    ; Address to call with Basic USR1
+                	   146: ;				   &f39e    ; Address to call with Basic USR2
+                	   147: ;				   &f3a0    ; Address to call with Basic USR3
+                	   148: ;				   &f3a2    ; Address to call with Basic USR4
+                	   149: ;				   &f3a4    ; Address to call with Basic USR5
+                	   150: ;				   &f3a6    ; Address to call with Basic USR6
+                	   151: ;				   &f3a8    ; Address to call with Basic USR7
+                	   152: ;				   &f3aa    ; Address to call with Basic USR8
+                	   153: ;				   &f3ac    ; Address to call with Basic USR9
+                	   154: LINL40:        equ &f3ae    ; Width for SCREEN 0 (default 37)
+                	   155: LINL32:        equ &f3af    ; Width for SCREEN 1 (default 29)
+                	   156: LINLEN:        equ &f3b0    ; Width for the current text mode
+                	   157: CRTCNT:        equ &f3b1    ; Number of lines on screen
+                	   158: CLMLST:        equ &f3b2    ; Column space. It’s uncertain what this address actually stores
+                	   159: 
+                	   160: ; Screen 0
+                	   161: TXTNAM:        equ &f3b3    ; BASE(0) - SCREEN 0 name table
+                	   162: TXTCOL:        equ &f3b5    ; BASE(1) - SCREEN 0 color table
+                	   163: TXTCGP:        equ &f3b7    ; BASE(2) - SCREEN 0 character pattern table
+                	   164: TXTATR:        equ &f3b9    ; BASE(3) - SCREEN 0 Sprite Attribute Table
+                	   165: TXTPAT:        equ &f3bb    ; BASE(4) - SCREEN 0 Sprite Pattern Table
+                	   166: 
+                	   167: ; Screen 1
+                	   168: T32NAM:        equ &f3bd    ; BASE(5) - SCREEN 1 name table
+                	   169: T32COL:        equ &f3bf    ; BASE(6) - SCREEN 1 color table
+                	   170: T32CGP:        equ &f3c1    ; BASE(7) - SCREEN 1 character pattern table
+                	   171: T32ATR:        equ &f3c3    ; BASE(8) - SCREEN 1 sprite attribute table
+                	   172: T32PAT:        equ &f3c5    ; BASE(9) - SCREEN 1 sprite pattern table
+                	   173: 
+                	   174: ; Screen 2
+                	   175: GRPNAM:        equ &f3c7    ; BASE(10) - SCREEN 2 name table
+                	   176: GRPCOL:        equ &f3c9    ; BASE(11) - SCREEN 2 color table
+                	   177: GRPCGP:        equ &f3cb    ; BASE(12) - SCREEN 2 character pattern table
+                	   178: GRPATR:        equ &f3cd    ; BASE(13) - SCREEN 2 sprite attribute table
+                	   179: GRPPAT:        equ &f3cf    ; BASE(14) - SCREEN 2 sprite pattern table
+                	   180: 
+                	   181: ; Screen 3
+                	   182: MLTNAM:        equ &f3d1    ; BASE(15) - SCREEN 3 name table
+                	   183: MLTCOL:        equ &f3d3    ; BASE(16) - SCREEN 3 color table
+                	   184: MLTCGP:        equ &f3d5    ; BASE(17) - SCREEN 3 character pattern table
+                	   185: MLTATR:        equ &f3d7    ; BASE(18) - SCREEN 3 sprite attribute table
+                	   186: MLTPAT:        equ &f3d9    ; BASE(19) - SCREEN 3 sprite pattern table
+                	   187: 
+                	   188: ; Screen Extra
+                	   189: CLIKSW:        equ &f3db    ; =0 when key press click disabled
+                	   190: 			                ; =1 when key press click enabled
+                	   191: 			                ; SCREEN ,,n will write to this address
+                	   192: CSRY:          equ &f3dc    ; Current row-position of the cursor
+                	   193: CSRX:          equ &f3dd    ; Current column-position of the cursor
+                	   194: CNSDFG:        equ &f3de    ; =0 when function keys are not displayed
+                	   195: 			                ; =1 when function keys are displayed
+                	   196: 
+                	   197: ; VDP bak
+                	   198: RG0SAV:        equ &f3df    ; Mirror of VDP register 0 (Basic: VDP(0))
+                	   199: RG1SAV:        equ &f3e0    ; Mirror of VDP register 1 (Basic: VDP(1))
+                	   200: RG2SAV:        equ &f3e1    ; Mirror of VDP register 2 (Basic: VDP(2))
+                	   201: RG3SAV:        equ &f3e2    ; Mirror of VDP register 3 (Basic: VDP(3))
+                	   202: RG4SAV:        equ &f3e3    ; Mirror of VDP register 4 (Basic: VDP(4))
+                	   203: RG5SAV:        equ &f3e4    ; Mirror of VDP register 5 (Basic: VDP(5))
+                	   204: RG6SAV:        equ &f3e5    ; Mirror of VDP register 6 (Basic: VDP(6))
+                	   205: RG7SAV:        equ &f3e6    ; Mirror of VDP register 7 (Basic: VDP(7))
+                	   206: STATFL:        equ &f3e7    ; Mirror of VDP(8) status register (S#0)
+                	   207: TRGFLG:        equ &f3e8    ; Information about trigger buttons and space bar state
+                	   208: 			                ; 7 6 5 4 3 2 1 0
+                	   209: 			                ; │ │ │ │       └── Space bar, trig(0) (0 = pressed)
+                	   210: 			                ; │ │ │ └────────── Stick 1, Trigger 1 (0 = pressed)
+                	   211: 			                ; │ │ └──────────── Stick 1, Trigger 2 (0 = pressed)
+                	   212: 			                ; │ └────────────── Stick 2, Trigger 1 (0 = pressed)
+                	   213: 			                ; └──────────────── Stick 2, Trigger 2 (0 = pressed)
+                	   214: FORCLR:        equ &f3e9    ; Foreground color
+                	   215: BAKCLR:        equ &f3ea    ; Background color
+                	   216: BDRCLR:        equ &f3eb    ; Border color
+                	   217: MAXUPD:        equ &f3ec    ; Jump instruction used by Basic LINE command. 
+                	   218:                             ; The routines used are: RIGHTC, LEFTC, UPC and DOWNC
+                	   219: MINUPD:        equ &f3ef    ; Jump instruction used by Basic LINE command. 
+                	   220:                             ; The routines used are: RIGHTC, LEFTC, UPC and DOWNC
+                	   221: ATRBYT:        equ &f3f2    ; Attribute byte (for graphical routines it’s used to read the color)
+                	   222: 
+                	   223: ; Play
+                	   224: QUEUES:        equ &f3f3    ; Queue table address, see QUETAB (initial value).
+                	   225: FRCNEW:        equ &f3f5    ; CLOAD flag
+                	   226: 			                ; =0 when CLOAD
+                	   227: 			                ; =255 when CLOAD?
+                	   228: 
+                	   229: ; Key input
+                	   230: SCNCNT:        equ &f3f6    ; Key scan timing
+                	   231: 			                ; When it’s zero, the key scan routine will scan for pressed keys 
+                	   232:                             ; so characters can be written to the keyboard buffer
+                	   233: REPCNT:        equ &f3f7    ; This is the key repeat delay counter
+                	   234: 			                ; When it reaches zero, the key will repeat
+                	   235: PUTPNT:        equ &f3f8    ; Address in the keyboard buffer where a character will be written
+                	   236: GETPNT:        equ &f3fa    ; Address in the keyboard buffer where the next character is read
+                	   237: 
+                	   238: ; Cassette
+                	   239: CS120:         equ &f3fc    ; Cassette I/O parameters to use for 1200 baud
+                	   240: CS240:         equ &f401    ; Cassette I/O parameters to use for 2400 baud
+                	   241: LOW:           equ &f406    ; Signal delay when writing a 0 to tape
+                	   242: HIGH:          equ &f408    ; Signal delay when writing a 1 to tape
+                	   243: HEADER:        equ &f40a    ; Delay of tape header (sync.) block
+                	   244: ASPCT1:        equ &f40b    ; Horizontal / Vertical aspect for CIRCLE command
+                	   245: ASPCT2:        equ &f40d    ; Horizontal / Vertical aspect for CIRCLE command
+                	   246: ENDPRG:        equ &f40f    ; Pointer for the RESUME NEXT command
+                	   247: 
+                	   248: ; Basic
+                	   249: ERRFLG:        equ &f414    ; Basic Error code
+                	   250: LPTPOS:        equ &f415    ; Printer head position
+                	   251: 		                    ; Is read by Basic function LPOS and used by LPRINT Basic command
+                	   252: 		                    ; PRTFLG:        equ &F416 	1 	Printer output flag is read by OUTDO
+                	   253: 		                    ; =0 to print to screen
+                	   254: 		                    ; =1 to print to printer
+                	   255: NTMSXP:        equ &f417    ; Printer type is read by OUTDO. SCREEN ,,,n writes to this address
+                	   256: 			                ; =0 for MSX printer
+                	   257: 			                ; =1 for non-MSX printer
+                	   258: RAWPRT:        equ &f418    ; Raw printer output is read by OUTDO
+                	   259: 			                ; =0 to convert tabs and unknown characters to spaces and remove graphical headers
+                	   260: 			                ; =1 to send data just like it gets it
+                	   261: VLZADR:        equ &f419    ; Address of data that is temporarilly replaced by ‘O’ when Basic 
+                	   262:                             ; function VAL("") is running
+                	   263: VLZDAT:        equ &f41b    ; Original value that was in the address pointed to with VLZADR
+                	   264: CURLIN:        equ &f41c    ; Line number the Basic interpreter is working on, in direct mode 
+                	   265:                             ; it will be filled with &FFFF
+                	   266: ; Missing a lot!
+                	   267: 
+                	   268: 
+                	   269: ; User Func
+                	   270: ; Math Pack
+                	   271: ; Basic Interpreter
+                	   272: ; Basic Circle
+                	   273: ; Basic Paint
+                	   274: 
+                	   275: ; Basic Play
+                	   276: MCLTAB:		   equ &f956	; points to the top of the tabla of PLAY macro or DRAW macro
+                	   277: MCLFLG:		   equ &f958 	; assignment of PLAY/DRAW
+                	   278: QUETAB:        equ &f959    ; Queue-table containing queue information. There are four queues in total, 
+                	   279:                             ; three PLAY queues and one RS232 queue, with 6-byte information blocks per queue:
+                	   280: 			                ; 0	Queue head offset (for writing).
+                	   281: 			                ; 1	Queue tail offset (for reading).
+                	   282: 			                ; 2	Flag indicating whether a byte has been returned.
+                	   283: 			                ; 3	Queue size.
+                	   284: 			                ; 4-5	Queue start address.
+                	   285: ;		           &f91f    ; Character set SlotID
+                	   286: ;		           &f920    ; Character set address
+                	   287: EXBRSA:        equ &faf8    ; SUBROM slot address (EXtended Bios-Rom Slot Address)
+                	   288: XSAVE:         equ &fafe    ; Light pen X coordinate read from the device (internal use only).
+                	   289: XOFFS:         equ &faff    ; Light pen X calibration offset
+                	   290:             			    ; Bit 0-6: X calibration offset
+                	   291:             			    ; Bit 7: A light pen interrupt occurred. Used internally by the MSX-BIOS, 
+                	   292:                             ; user software mustn’t set it.
+                	   293: YSAVE:         equ &fb00    ; Light pen Y coordinate read from the device (internal use only).
+                	   294: YOFFS:         equ &fb01    ; Light pen Y calibration offset
+                	   295: 			                ; Bit 0-6: Y calibration offset
+                	   296: 			                ; Bit 7: Reserved for future use. Mask from reads and do not set.
+                	   297: 
+                	   298: ; DOS
+                	   299: DRVINF:        equ &fb21    ; Nr. of drives connected to disk interface 1
+                	   300: ;		           &fb22    ; Slot address of disk interface 1
+                	   301: ;		           &fb23    ; Nr. of drives connected to disk interface 2
+                	   302: ;		           &fb24    ; Slot address of disk interface 2
+                	   303: ;		           &fb25    ; Nr. of drives connected to disk interface 3
+                	   304: ;		           &fb26    ; Slot address of disk interface 3
+                	   305: ;		           &fb27    ; Nr. of drives connected to disk interface 4
+                	   306: ;		           &fb28    ; Slot address of disk interface 4
+                	   307: ;				              &fb29 a &fb34 reserved used by DOS
+                	   308: 
+                	   309: ; Play
+                	   310: ; Voice
+                	   311: 
+                	   312: ; Data
+                	   313: ; Missing from &fbb0 to &fcbf
+                	   314: EXPTBL:        equ &fcc1    ; Slot 0: #80 = expanded, 0 = not expanded. Also main BIOS-ROM slot address.
+                	   315: ;          		   &fcc2    ; Slot 1: #80 = expanded, 0 = not expanded.
+                	   316: ;          		   &fcc3    ; Slot 2: #80 = expanded, 0 = not expanded.
+                	   317: ;          		   &fcc4    ; Slot 3: #80 = expanded, 0 = not expanded.
+                	   318: SLTTBL:        equ &fcc5    ; Mirror of slot 0 secondary slot selection register.
+                	   319: ;		           &fcc6    ; Mirror of slot 1 secondary slot selection register.
+                	   320: ;		           &fcc7    ; Mirror of slot 2 secondary slot selection register.
+                	   321: ;		           &fcc8    ; Mirror of slot 3 secondary slot selection register.
+                	   322: ; Missing from &fcc9 to &ffd4
+                	   323: RG8SAV:        equ &ffe7    ; Mirror of VDP register 8 (Basic: VDP(9), note: +1)
+                	   324: RG9SAV:        equ &ffe8    ; Mirror of VDP register 9 (Basic: VDP(10), note: +1)
+                	   325: RG10SA:        equ &ffe9    ; Mirror of VDP register 10 (Basic: VDP(11), note: +1)
+                	   326: RG11SA:        equ &ffea    ; Mirror of VDP register 11 (Basic: VDP(12), note: +1)
+                	   327: RG12SA:        equ &ffeb    ; Mirror of VDP register 12 (Basic: VDP(13), note: +1)
+                	   328: RG13SA:        equ &ffec    ; Mirror of VDP register 13 (Basic: VDP(14), note: +1)
+                	   329: RG14SA:        equ &ffed    ; Mirror of VDP register 14 (Basic: VDP(15), note: +1)
+                	   330: RG15SA:        equ &ffee    ; Mirror of VDP register 15 (Basic: VDP(16), note: +1)
+                	   331: RG16SA:        equ &ffef    ; Mirror of VDP register 16 (Basic: VDP(17), note: +1)
+                	   332: RG17SA:        equ &fff0    ; Mirror of VDP register 17 (Basic: VDP(18), note: +1)
+                	   333: RG18SA:        equ &fff1    ; Mirror of VDP register 18 (Basic: VDP(19), note: +1)
+                	   334: RG19SA:        equ &fff2    ; Mirror of VDP register 19 (Basic: VDP(20), note: +1)
+                	   335: RG20SA:        equ &fff3    ; Mirror of VDP register 20 (Basic: VDP(21), note: +1)
+                	   336: RG21SA:        equ &fff4    ; Mirror of VDP register 21 (Basic: VDP(22), note: +1)
+                	   337: RG22SA:        equ &fff5    ; Mirror of VDP register 22 (Basic: VDP(23), note: +1)
+                	   338: RG23SA:        equ &fff6    ; Mirror of VDP register 23 (Basic: VDP(24), note: +1)
+                	   339: ROMSLT:        equ &fff7    ; Main BIOS slot ID. (MSX2 and up only)
+                	   340: RG25SA:        equ &fffa    ; Mirror of VDP register 25 (Basic: VDP(26), note: +1)
+                	   341: RG26SA:        equ &fffb    ; Mirror of VDP register 26 (Basic: VDP(27), note: +1)
+                	   342: RG27SA:        equ &fffc    ; Mirror of VDP register 27 (Basic: VDP(28), note: +1)
+                	   343: ;		           &fffd    ; Temporary stack pointer for CHGCPU.
+                	   344: ;		           &ffff    ; Secondary slot select register, if the slot is expanded.
+                	   345: 		           	        ; 7 6 5 4 3 2 1 0
+                	   346: 		           	        ; │ │ │ │ │ │ └─┴── Secondary slot for page 0 (#0000-#3FFF)
+                	   347: 		           	        ; │ │ │ │ └─┴────── Secondary slot for page 1 (#4000-#7FFF)
+                	   348: 		           	        ; │ │ └─┴────────── Secondary slot for page 2 (#8000-#BFFF)
+                	   349: 		           	        ; └─┴────────────── Secondary slot for page 3 (#C000-&FFFF)
+                	   350: 		           	        ; Reading returns the inverse of the current subslot selection. 
+                	   351:                             ; Values are mirrored in SLTTBL for convenience.
+                	   352: 		           		    ; Note that each expanded primary slot has its own register. 
+                	   353:                             ; To access a specific primary slot’s register, you need to select it 
+                	   354:                             ; in page 3 before reading the value.
+                	   355: 
+                	   356: 
+                	   357: ;-----------------------------------------------
+                	   358: ; I/O Ports
+                	   359: ;-----------------------------------------------
+                	   360: 
+                	   361: ; PPI / Programmable Peripheral Interface / 8255
+                	   362: 
+                	   363: PPI_REG_A:    equ &a8       ; PPI-register A. Primary slot select register
+                	   364: 		           	        ; 7 6 5 4 3 2 1 0
+                	   365: 		           	        ; │ │ │ │ │ │ └─┴── Secondary slot for page 0 (#0000-#3FFF)
+                	   366: 		           	        ; │ │ │ │ └─┴────── Secondary slot for page 1 (#4000-#7FFF)
+                	   367: 		           	        ; │ │ └─┴────────── Secondary slot for page 2 (#8000-#BFFF)
+                	   368: 		           	        ; └─┴────────────── Secondary slot for page 3 (#C000-&FFFF)
+                	   369: PPI_REG_B:    equ &a9       ; PPI-register B. Keyboard matrix row input register
+                	   370: PPI_REG_C:    equ &aa       ; PPI-register C. Keyboard and cassette interface
+                	   371: 		           	        ; 7 6 5 4 3 2 1 0
+                	   372: 		           	        ; │ │ │ │ └─┴─┴─┴── Keyboard matrix row select register.
+                	   373:                             ; │ │ │ │           Matrix row can be read from PPI-register B (#A9)
+                	   374: 		           	        ; │ │ │ └────────── Cassette motor control. 1 = off
+                	   375: 		           	        ; │ │ └──────────── Cassette write signal. 1 = high
+                	   376:                             ; │ └────────────── Keyboard CAPS LED. 1 = off
+                	   377: 		           	        ; └──────────────── 1-bit key click sound output. 1 = high
+                	   378: PPI_COM_R:    equ &ab       ; PPI Command Register
+                	   379: 		           	        ; 7 6 5 4 3 2 1 0
+                	   380: 		           	        ; │ │ │ │ │ │ │ └── Value to set
+                	   381: 		           	        ; │ │ │ │ └─┴─┴──── Bit no. within PPI-register C
+                	   382: 		           	        ; │ └─┴─┴────────── Not used
+                	   383: 		           	        ; └──────────────── Must be 0
+                	   384: 
+                	   385: 
+                	   386: ;-----------------------------------------------
+                	   387: ; MSX1 Colors
+                	   388: ;-----------------------------------------------
+                	   389: 
+                	   390: COLOR_TRANSPARENT:	 equ 0
+                	   391: COLOR_BLACK:		 equ 1
+                	   392: COLOR_GREEN:		 equ 2
+                	   393: COLOR_LIGHT_GREEN:	 equ 3
+                	   394: COLOR_DARK_BLUE:	 equ 4
+                	   395: COLOR_BLUE:			 equ 5
+                	   396: COLOR_DARK_RED:		 equ 6
+                	   397: COLOR_LIGHT_BLUE:	 equ 7
+                	   398: COLOR_RED:			 equ 8
+                	   399: COLOR_LIGHT_RED:	 equ 9
+                	   400: COLOR_DARK_YELLOW:	 equ 10
+                	   401: COLOR_YELLOW:		 equ 11
+                	   402: COLOR_DARK_GREEN:	 equ 12
+                	   403: COLOR_PURPLE:		 equ 13
+                	   404: COLOR_GREY:			 equ 14
+                	   405: COLOR_WHITE:		 equ 15
+                	   406: 
+
+Source: "main.z80"
+                	     9: 
+                	    10:    
+                	    11: ;-----------------------------------------------
+                	    12: ; Definitions
+                	    13: ;-----------------------------------------------
+                	    14: 
+                	    15: CR:            equ &0d								; carriage return
+                	    16: LF:            equ &0a								; line feed
+                	    17: 
+                	    18: 
+                	    19: ;-----------------------------------------------
+                	    20: ; Variables & Contants
+                	    21: ;-----------------------------------------------
+                	    22: 
+00:8010 48656C6C	    23: TXT_HELLO1 db "Hello MSX!",0						; Ending with &00
+00:8014 6F204D53
+00:8018 5821
+00:801A 00
+00:801B 0D      	    24: TXT_HELLO2 db CR,LF,CR,LF,"Testing r2",0			; Ending with &00
+00:801C 0A
+00:801D 0D
+00:801E 0A
+00:801F 54657374
+00:8023 696E6720
+00:8027 7232
+00:8029 00
+                	    25: 
+                	    26: 
+                	    27: ;-----------------------------------------------
+                	    28: ; Main Program
+                	    29: ;-----------------------------------------------
+                	    30: 
+                	    31: MAIN:
+00:802A CD3380  	    32: 	call InitMode_SC0
+00:802D CD4280  	    33: 	call PrintMessage
+                	    34: 
+                	    35: ENDMAIN:
+00:8030 C33080  	    36: 	jp ENDMAIN
+                	    37: 
+                	    38: 
+                	    39: ;-----------------------------------------------
+                	    40: ; Functions
+                	    41: ;-----------------------------------------------
+                	    42: 
+                	    43: InitMode_SC0:
+00:8033 21E9F3  	    44: 	ld hl, FORCLR									; COLOR 15, 0, 0
+00:8036 360F    	    45: 	ld (hl), COLOR_WHITE							; set foreground color
+00:8038 23      	    46: 	inc hl		
+00:8039 3601    	    47: 	ld (hl), COLOR_BLACK							; set backgroup color
+00:803B 23      	    48: 	inc hl		
+00:803C 3601    	    49: 	ld (hl), COLOR_BLACK							; set border color
+00:803E CD6C00  	    50: 	call INITXT										; set SCREEN 0 (40x24)
+00:8041 C9      	    51: 	ret
+                	    52: 
+                	    53: PrintMessage:
+00:8042 2601    	    54: 	ld h, 01										; set column
+00:8044 2E01    	    55: 	ld l, 01										; set row
+00:8046 CDC600  	    56: 	call POSIT										; set position to print
+00:8049 211080  	    57: 	ld hl, TXT_HELLO1								; string to print
+00:804C CD5680  	    58: 	call PrintChars		
+00:804F 211B80  	    59: 	ld hl, TXT_HELLO2								; string to print
+00:8052 CD5680  	    60: 	call PrintChars
+00:8055 C9      	    61: 	ret
+                	    62: 
+                	    63: PrintChars:
+00:8056 7E      	    64: 	ld a, (hl)										; character to print				
+00:8057 B7      	    65: 	or a											; Until &00
+00:8058 C8      	    66: 	ret z		
+00:8059 CDA200  	    67: 	call CHPUT										; display the character
+00:805C 23      	    68: 	inc hl
+00:805D 18F7    	    69: 	jr PrintChars
+                	    70: 
+
+
+Symbols by name:
+CHPUT                            E:00A2
+COLOR_BLACK                      E:0001
+COLOR_WHITE                      E:000F
+CR                               E:000D
+ENDMAIN                          A:8030
+FORCLR                           E:F3E9
+InitMode_SC0                     A:8033
+INITXT                           E:006C
+LF                               E:000A
+MAIN                             A:802A
+POSIT                            E:00C6
+PrintChars                       A:8056
+PrintMessage                     A:8042
+ROMADDR                          E:8000
+TXT_HELLO1                       A:8010
+TXT_HELLO2                       A:801B
+
+Symbols by value:
+0001 COLOR_BLACK
+000A LF
+000D CR
+000F COLOR_WHITE
+006C INITXT
+00A2 CHPUT
+00C6 POSIT
+8000 ROMADDR
+8010 TXT_HELLO1
+801B TXT_HELLO2
+802A MAIN
+8030 ENDMAIN
+8033 InitMode_SC0
+8042 PrintMessage
+8056 PrintChars
+F3E9 FORCLR
