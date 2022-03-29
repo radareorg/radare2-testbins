@@ -226,7 +226,6 @@
 "e cfg.fortunes.type = tips,fun"
 "e cfg.json.num = none"
 "e cfg.json.str = none"
-"e cfg.newshell = false"
 "e cfg.newtab = false"
 "e cfg.plugins = false"
 "e cfg.prefixdump = dump"
