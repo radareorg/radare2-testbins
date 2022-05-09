@@ -1,0 +1,521 @@
+VERSION 5.5                                     OS/360 PL/I COMPILER (F)                                    DATE 21.267
+
+
+PL/I F COMPILER OPTIONS SPECIFIED ARE AS FOLLOWS--
+
+     SOURCE,XREF,LIST
+
+
+THE COMPLETE LIST OF OPTIONS USED DURING THIS COMPILATION IS--   EBCDIC
+                                                                 CHAR60
+                                                               NOMACRO
+                                                                 SOURCE2
+                                                               NOMACDCK
+                                                                 COMP
+                                                                 SOURCE
+                                                               NOATR
+                                                                 XREF
+                                                               NOEXTREF
+                                                                 LIST
+                                                                 LOAD
+                                                               NODECK
+                                                                 FLAGW
+                                                               NOSTMT
+                                                                 SIZE=0735208
+                                                                 LINECNT=050
+                                                                 OPT=01
+                                                                 SORMGIN=(002,072)
+                                                               NOEXTDIC
+                                                               NONEST
+                                                                 OPLIST
+                                                                 SYNCHKT
+
+
+*OPTIONS IN EFFECT*     EBCDIC,CHAR60,NOMACRO,SOURCE2,NOMACDCK,COMP,SOURCE,NOATR,XREF,NOEXTREF,LIST,LOAD,
+*OPTIONS IN EFFECT*     NODECK,FLAGW,NOSTMT,SIZE=0735208,LINECNT=050,OPT=01,SORMGIN=(002,072),NOEXTDIC,
+*OPTIONS IN EFFECT*     NONEST,OPLIST,SYNCHKT           PLISUM: PROCEDURE OPTIONS(MAIN);                                                                 PAGE      2
+
+
+     1               PLISUM: PROCEDURE OPTIONS(MAIN);
+     2                DCL A        BIN FIXED(15);
+     3                DCL B        BIN FIXED(15);
+     4                DCL C        BIN FIXED(15);
+
+     5                PUT SKIP LIST('Calling a function sample');
+
+     6                A = 2;
+     7                B = 5;
+
+     8                C = FUNCTION_SUM(A, B);
+
+     9                PUT SKIP EDIT('The result of the sum of ',
+                                    A, ' and ', B, ' is ', C) (A, A, A);
+
+    10               FUNCTION_SUM: PROC(A, B) RETURNS(BIN FIXED(15));
+    11                DCL A        BIN FIXED(15);
+    12                DCL B        BIN FIXED(15);
+    13                DCL C        BIN FIXED(15);
+
+    14                C = A + B;
+
+    15                RETURN(C);
+    16               END FUNCTION_SUM;
+
+    17               END PLISUM;           PLISUM: PROCEDURE OPTIONS(MAIN);                                                                 PAGE      3
+
+
+                                                    CROSS-REFERENCE TABLE
+
+
+DCL NO.         IDENTIFIER                          REFERENCES
+
+
+11    ********* A                                   10,14
+
+2     ********* A                                   6,8,9
+
+12    ********* B                                   10,14
+
+3     ********* B                                   7,8,9
+
+13    ********* C                                   14,15
+
+4     ********* C                                   8,9
+
+10              FUNCTION_SUM                        8
+
+1               PLISUM
+
+                SYSPRINT                            5,9           PLISUM: PROCEDURE OPTIONS(MAIN);                                                                 PAGE      4
+
+
+          STORAGE REQUIREMENTS.
+          ----------------------
+
+          THE STORAGE AREA FOR THE PROCEDURE LABELLED PLISUM IS 192 BYTES LONG.
+
+          THE STORAGE AREA (IN STATIC) FOR THE PROCEDURE LABELLED FUNCTION_SUM IS 184 BYTES LONG.
+
+          THE PROGRAM CSECT IS NAMED PLISUM   AND IS 534 BYTES LONG.
+
+          THE STATIC  CSECT IS NAMED *PLISUMA AND IS 440 BYTES LONG.
+
+
+*STATISTICS*     SOURCE RECORDS =       26,PROG TEXT STMNTS =       17,OBJECT BYTES =      534           PLISUM: PROCEDURE OPTIONS(MAIN);                                                                 PAGE      5
+
+
+                          STATIC INTERNAL STORAGE MAP
+
+000038  00000100              A..DSA..FUNCTION_SUM
+000040  0000011C              A..   FUNCTION_SUM
+000044  00000000              A..   PLISUM
+000048  00000000              A..   IHELDOB
+00004C  00000000              A..   IHEDOBB
+000050  00000000              A..   IHEDOBB
+000054  00000000              A..   IHEIOBT
+000058  00000000              A..   IHEIOBC
+000030  00000000              A..   IHESAFA
+00005C  00000000              A..   IHESAFB
+000060  00000000              A..   IHESPRT
+000068  4E00000000000000      CONSTANTS
+000070  0000000500000002
+000078  0000000100000084
+000080  000400044089A240
+000088  0000009000050005
+000090  40819584400D0000
+000098  000000A000190019
+0000A0  E38885409985A2A4
+0000A8  93A340968640A388
+0000B0  8540A2A494409686
+0000B8  400D0000000000C4
+0000C0  00190019C3819393
+0000C8  89958740814086A4
+0000D0  9583A389969540A2
+0000D8  8194979385
+0000E0  00000000              ARGUMENT LIST
+0000E4  0000010E
+0000E8  80
+0000E9  000078
+0000EC  00000000              ARGUMENT LIST
+0000F0  00000050
+0000F4  80
+0000F5  000078
+0000F8  2C                    DED
+0000F9  8A0600                DED
+0000FC  9C0F80                DED           PLISUM: PROCEDURE OPTIONS(MAIN);                                                                 PAGE      6
+
+
+  OBJECT LISTING                                              * STATEMENT NUMBER  7
+                                                              00005C  D2 01 D 09A B 072         MVC   B(2),C..0588+2
+* STATEMENT NUMBER  1
+                                                              * STATEMENT NUMBER  8
+* PROCEDURE                             PLISUM                000062  41 80 D 09C               LA    8,A
+                                                              000066  50 80 D 084               ST    8,WS1.1+4
+* REAL ENTRY                            PLISUM                00006A  41 80 D 09A               LA    8,B
+000000  47 F0 F 014               B     20(0,15)              00006E  50 80 D 088               ST    8,WS1.1+8
+000004                            DC    AL1(6)                000072  41 80 D 080               LA    8,WS1.1
+000005                            DC    C'PLISUM'             000076  50 80 D 08C               ST    8,WS1.1+12
+00000C  000000C0                  DC    F'192'                00007A  96 80 D 08C               OI    WS1.1+12,X'80'
+000010  00000000                  DC    A(SI.)                00007E  41 10 D 084               LA    1,WS1.1+4
+000014  90 EB D 00C               STM   14,11,12(13)          000082  58 F0 B 040               L     15,A..FUNCTION_SUM
+000018  58 B0 F 010               L     11,16(0,15)           000086  05 EF                     BALR  14,15
+00001C  58 00 F 00C               L     0,12(0,15)            000088  2B 00                     SDR   0,0
+000020  58 F0 B 020               L     15,32(0,11)           00008A  7A 00 D 080               AE    0,WS1.1
+000024  05 EF                     BALR  14,15                 00008E  6E 00 B 068               AW    0,C..0744
+000026  05 A0                     BALR  10,0                  000092  60 00 D 090               STD   0,WS1.1+16
+                                                              000096  58 F0 D 094               L     15,WS1.1+20
+* PROLOGUE BASE                                               00009A  47 B0 A 068               BC    11,CL.3
+000028  41 90 D 0A0               LA    9,160(0,13)           00009E  13 FF                     LCR   15,15
+00002C                    CL.8    EQU   *                     0000A0                    CL.3    EQU   *
+00002C  50 DC 0 000               ST    13,PR..PLISUM(12)     0000A0  40 F0 D 098               STH   15,C
+000030  92 80 D 000               MVI   0(13),X'80'
+000034  41 A0 A 010               LA    10,CL.4               * STATEMENT NUMBER  9
+                                                              0000A4  41 10 B 0E0               LA    1,SKPL..06FC
+* PROCEDURE BASE                                              0000A8  58 F0 B 058               L     15,A..IHEIOBC
+000038                    CL.4    EQU   *                     0000AC  05 EF                     BALR  14,15
+                                                              0000AE  41 80 A 0BA               LA    8,CL.1
+* APPARENT ENTRY                        PLISUM                0000B2  41 10 B 098               LA    1,DV..C..0598
+                                                              0000B6  41 20 B 0F8               LA    2,DED..C..0598
+* STATEMENT NUMBER  5                                         0000BA  05 78                     BALR  7,8
+000038  41 10 B 0EC               LA    1,SKPL..06B0          0000BC  41 10 D 09C               LA    1,A
+00003C  58 F0 B 058               L     15,A..IHEIOBC         0000C0  41 20 B 0FC               LA    2,DED..A
+000040  05 EF                     BALR  14,15                 0000C4  05 78                     BALR  7,8
+000042  41 10 B 0BC               LA    1,DV..C..0534         0000C6  41 10 B 088               LA    1,DV..C..05C0
+000046  41 20 B 0F8               LA    2,DED..C..0534        0000CA  41 20 B 0F8               LA    2,DED..C..05C0
+00004A  58 F0 B 048               L     15,A..IHELDOB         0000CE  05 78                     BALR  7,8
+00004E  05 EF                     BALR  14,15                 0000D0  41 10 D 09A               LA    1,B
+                          CL.10   EQU   *                     0000D4  41 20 B 0FC               LA    2,DED..B
+000050  58 F0 B 054               L     15,A..IHEIOBT         0000D8  05 78                     BALR  7,8
+000054  05 EF                     BALR  14,15                 0000DA  41 10 B 07C               LA    1,DV..C..05D4
+                                                              0000DE  41 20 B 0F8               LA    2,DED..C..05D4
+* STATEMENT NUMBER  6                                         0000E2  05 78                     BALR  7,8
+000056  D2 01 D 09C B 076         MVC   A(2),C..0578+2        0000E4  41 10 D 098               LA    1,C
+                                                              0000E8  41 20 B 0FC               LA    2,DED..C           PLISUM: PROCEDURE OPTIONS(MAIN);                                                                 PAGE      7
+
+
+0000EC  05 78                     BALR  7,8                   000168  41 A0 A 00C               LA    10,CL.6
+0000EE  47 F0 A 0D6               B     CL.2
+0000F2                    CL.1    EQU   *                     * PROCEDURE BASE
+0000F2  58 F0 B 050               L     15,A..IHEDOBB         00016C                    CL.6    EQU   *
+0000F6  18 E7                     LR    14,7
+0000F8  05 8F                     BALR  8,15                  * APPARENT ENTRY                        FUNCTION_SUM
+0000FA  58 F0 B 050               L     15,A..IHEDOBB
+0000FE  18 E7                     LR    14,7                  * STATEMENT NUMBER  14
+000100  05 8F                     BALR  8,15                  00016C  58 80 D 088               L     8,A..A
+000102  58 F0 B 050               L     15,A..IHEDOBB         000170  48 E0 8 000               LH    14,0(0,8)
+000106  18 E7                     LR    14,7                  000174  58 70 D 08C               L     7,A..B
+000108  05 8F                     BALR  8,15                  000178  4A E0 7 000               AH    14,0(0,7)
+00010A  47 F0 A 0BA               B     CL.1                  00017C  40 E0 D 090               STH   14,C
+00010E                    CL.2    EQU   *
+                          CL.11   EQU   *                     * STATEMENT NUMBER  15
+00010E  58 F0 B 054               L     15,A..IHEIOBT         000180  58 60 D 07C               L     6,A..FVR..FUNCTION
+000112  05 EF                     BALR  14,15                                                         _SUM
+                                                              000184  48 E0 D 090               LH    14,C
+* STATEMENT NUMBER  10                                        000188  50 E0 6 000               ST    14,0(0,6)
+                                                              00018C  58 F0 B 05C               L     15,A..IHESAFB
+* PROCEDURE                             FUNCTION_SUM          000190  05 EF                     BALR  14,15
+
+* REAL ENTRY                            FUNCTION_SUM          * STATEMENT NUMBER  16
+00011C  47 F0 F 018               B     24(0,15)              000192  58 F0 B 02C               L     15,44(0,11)
+000120                            DC    AL1(12)               000196  05 EF                     BALR  14,15
+000121                            DC    C'FUNCTION_SUM'
+00012E  07 00                     NOPR  0                     * END PROCEDURE                         FUNCTION_SUM
+000130  000000B8                  DC    F'184'
+000134  90 EB D 00C               STM   14,11,12(13)          * STATEMENT NUMBER  17
+000138  58 30 B 038               L     3,56(0,11)            000114  58 F0 B 030               L     15,A..IHESAFA
+00013C  1B 22                     SR    2,2                   000118  05 EF                     BALR  14,15
+00013E  50 20 3 050               ST    2,80(0,3)
+000142  58 F0 B 02C               L     15,44(0,11)           * END PROCEDURE                         PLISUM
+000146  45 E0 F 062               BAL   14,98(0,15)
+00014A  D2 07 D 088 1 000         MVC   A..A(8),0(1)          * EPILOGUE SUBROUTINE
+000150  92 00 D 08C               MVI   A..B,X'00'
+000154  58 E0 1 008               L     14,8(0,1)             000198  91 80 D 001               TM    1(13),X'80'
+000158  50 E0 D 07C               ST    14,124(0,13)          00019C  47 80 F 03C               BC    8,60(15)
+00015C  05 A0                     BALR  10,0                  0001A0  58 20 D 050               L     2,80(13)
+00015E  05 A0                     BALR  10,0                  0001A4  12 22                     LTR   2,2
+                                                              0001A6  47 70 F 03C               BC    7,60(15)
+* PROLOGUE BASE                                               0001AA  59 DC 0 000               C     13,PR..IHEQSLA(12)
+000160  41 90 D 098               LA    9,152(0,13)           0001AE  47 70 F 03C               BC    7,60(15)
+000164                    CL.9    EQU   *                     0001B2  58 D0 D 004               L     13,4(13)
+000164  50 DC 0 000               ST    13,PR..FUNCTION_SU    0001B6  50 DC 0 000               ST    13,PR..IHEQSLA(12)
+                                        M(12)                 0001BA  91 80 D 000               TM    0(13),X'80'           PLISUM: PROCEDURE OPTIONS(MAIN);                                                                 PAGE      8
+
+
+0001BE  47 10 F 032               BC    1,50(15)
+0001C2  58 D0 D 004               L     13,4(13)
+0001C6  47 F0 F 022               B     34(15)
+0001CA  50 20 D 008               ST    2,8(13)
+0001CE  98 EB D 00C               LM    14,11,12(13)
+0001D2  07 FE                     BR    14
+0001D4  58 F0 B 030               L     15,A..IHESAFA
+0001D8  07 FF                     BR    15
+
+* END SUBROUTINE
+
+* STATIC PROLOGUE SUBROUTINE
+
+0001DA  58 4C 0 000               L     4,PR..IHEQINV(12)
+0001DE  12 44                     LTR   4,4
+0001E0  47 B0 F 056               BC    11,86(15)
+0001E4  58 7C 0 000               L     7,PR..IHEQLW0(12)
+0001E8  D2 03 3 050 7 050         MVC   80(4,3),80(7)
+0001EE  41 40 4 001               LA    4,1(4)
+0001F2  50 4C 0 000               ST    4,PR..IHEQINV(12)
+0001F6  50 40 3 054               ST    4,84(3)
+0001FA  92 00 3 04C               MVI   76(3),X'00'
+0001FE  50 30 D 008               ST    3,8(13)
+000202  18 D3                     LR    13,3
+000204  58 3C 0 000               L     3,PR..IHEQSLA(12)
+000208  50 30 D 004               ST    3,4(13)
+00020C  50 DC 0 000               ST    13,PR..IHEQSLA(12)
+000210  50 20 D 008               ST    2,8(13)
+000214  07 FE                     BR    14
+
+* END SUBROUTINE
+                                  END           PLISUM: PROCEDURE OPTIONS(MAIN);                                                                 PAGE      9
+
+
+    COMPILER DIAGNOSTICS.
+
+
+
+
+ WARNINGS.
+
+
+    IEM0567I     10   IF FUNCTION FUNCTION_SUM IN STATEMENT NUMBER 10 IS INVOKED, THE DEFAULT ATTRIBUTES ASSUMED
+
+
+                      FOR THE VALUE RETURNED WILL CONFLICT WITH THE ATTRIBUTES IN THE PROCEDURE OR ENTRY STATEMENT
+
+
+                      FOR THAT VALUE.
+
+
+    IEM0227I          NO FILE/STRING OPTION SPECIFIED IN ONE OR MORE GET/PUT STATEMENTS. SYSIN/SYSPRINT HAS BEEN
+
+
+                      ASSUMED IN EACH CASE.
+
+
+    IEM0764I          ONE OR MORE FIXED BINARY ITEMS OF PRECISION 15 OR LESS HAVE BEEN GIVEN HALFWORD STORAGE. THEY
+
+
+                      ARE FLAGGED '*********' IN THE XREF/ATR LIST.
+
+
+
+
+
+ END OF DIAGNOSTICS.
+
+
+AUXILIARY STORAGE WILL NOT BE USED FOR DICTIONARY WHEN SIZE = 157K
+
+
+COMPILE TIME         .00 MINS
+
+ELAPSED TIME         .06 MINS
+ F64-LEVEL LINKAGE EDITOR OPTIONS SPECIFIED XREF,LIST,MAP
+          DEFAULT OPTION(S) USED -  SIZE=(231424,55296)
+IEW0000      NAME PLISUM(R)
+
+
+
+                                                CROSS REFERENCE TABLE
+
+
+  CONTROL SECTION                       ENTRY
+
+    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+  PLISUM        00     216
+  *PLISUMA     218     1B8
+  IHEMAIN      3D0       4
+  IHENTRY      3D8       C
+  IHESPRT      3E8      38
+  IHEDNC  *    420     2B2
+                                        IHEDNCA      420
+  IHEDMA  *    6D8      F8
+                                        IHEDMAA      6D8
+  IHEUPA  *    7D0      E8
+                                        IHEUPAA      7D0    IHEUPAB      83A
+  IHEVQC  *    8B8     268
+                                        IHEVQCA      8B8
+  IHEVSB  *    B20      CE
+                                        IHEVSBA      B20
+  IHEVSC  *    BF0      AC
+                                        IHEVSCA      BF0
+  IHEVSE  *    CA0     15D
+                                        IHEVSEA      CA0    IHEVSEB      CA2
+  IHEVSF  *    E00      EC
+                                        IHEVSFA      E00
+  IHEVFA  *    EF0     16C
+                                        IHEVFAA      EF0
+  IHEVFB  *   1060      F0
+                                        IHEVFBA     1060
+  IHEVFC  *   1150      26
+                                        IHEVFCA     1150
+  IHEVFD  *   1178      66
+                                        IHEVFDA     1178
+  IHEVFE  *   11E0      20
+                                        IHEVFEA     11E0
+  IHEVKB  *   1200     30A
+                                        IHEVKBA     1200
+  IHEVKC  *   1510     2D0
+                                        IHEVKCA     1510
+  IHEVKF  *   17E0     67C
+                                        IHEVKFA     17E0
+  IHEVKG  *   1E60     4DE
+                                        IHEVKGA     1E60
+  IHEVPA  *   2340     1E0
+                                        IHEVPAA     2340
+  IHEVPB  *   2520     1A2
+                                        IHEVPBA     2520
+
+    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+  IHEVPC  *   26C8     1F0
+                                        IHEVPCA     26C8
+  IHEVPD  *   28B8     105
+                                        IHEVPDA     28B8
+  IHEVPE  *   29C0     278
+                                        IHEVPEA     29C0
+  IHEVPF  *   2C38      50
+                                        IHEVPFA     2C38
+  IHEVPG  *   2C88     229
+                                        IHEVPGA     2C88
+  IHEVPH  *   2EB8      B4
+                                        IHEVPHA     2EB8
+  IHEERR  *   2F70     745
+                                        IHEERRD     2F70    IHEERRC     2F7A    IHEERRB     2F84    IHEERRA     2F8E
+                                        IHEERRE     361E
+  IHEABN  *   36B8       C
+                                        IHEABND     36B8
+  IHEM91  *   36C8     178
+                                        IHEM91B     36C8    IHEM91A     36D0    IHEM91C     37E2
+  IHETER  *   3840     110
+                                        IHETERA     3840
+  IHEDOB  *   3950     144
+                                        IHEDOBA     3950    IHEDOBB     3952    IHEDOBC     3954
+  IHEIOD  *   3A98     29A
+                                        IHEIODG     3A98    IHEIODP     3A9A    IHEIODT     3B92
+  IHEIOF  *   3D38     2DC
+                                        IHEIOFB     3D38    IHEIOFA     3D3A    IHEITAZ     3FD6    IHEITAX     3FE2
+                                        IHEITAA     3FF6
+  IHEIOB  *   4018     1E0
+                                        IHEIOBA     4018    IHEIOBB     4020    IHEIOBC     4028    IHEIOBD     4030
+                                        IHEIOBE     4038    IHEIOBT     4120
+  IHEIOP  *   41F8     1F7
+                                        IHEIOPA     41F8    IHEIOPB     41FA    IHEIOPC     41FE
+  IHEOCL  *   43F0     580
+                                        IHEOCLA     43F0    IHEOCLB     43F2    IHEOCLC     43F4    IHEOCLD     43F6
+  IHELDO  *   4970     418
+                                        IHELDOA     4970    IHELDOB     4972    IHELDOC     4976
+  IHESAP  *   4D88     B1C
+                                        IHESADA     4D88    IHESAPC     4DA2    IHESAPD     4DAA    IHESAPA     4DB2
+                                        IHESAPB     4DBA    IHESADF     4DC2    IHESADB     4DCA    IHESADE     4DD2
+                                        IHESAFC     4DDA    IHESAFA     4DE2    IHESAFB     4DEA    IHESAFD     4DF2
+                                        IHESARA     4DFA    IHESAFQ     4E02    IHESARC     55F4    IHESADD     5708
+                                        IHESAFF     5742
+  IHEBEG  *   58A8      80
+                                        IHEBEGN     58A8    IHEBEGA     58E8
+  IHEDDO  *   5928     288
+                                        IHEDDOA     5928    IHEDDOB     592A    IHEDDOC     592C    IHEDDOD     592E
+                                        IHEDDOE     5930
+  IHEPRT  *   5BB0     308
+                                        IHEPRTA     5BB0    IHEPRTB     5BB2
+  IHESIZ  *   5EB8       C
+                                        IHESIZE     5EB8
+
+    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION
+  IHETAB  *   5EC8       C
+                                        IHETABS     5EC8
+  IHEDDP  *   5ED8     28C
+                                        IHEDDPA     5ED8    IHEDDPB     5EDA    IHEDDPC     5EDC    IHEDDPD     5EDE
+
+
+
+  LOCATION  REFERS TO SYMBOL  IN CONTROL SECTION             LOCATION  REFERS TO SYMBOL  IN CONTROL SECTION
+       10            *PLISUMA        *PLISUMA                     238            IHESADA         IHESAP
+      23C            IHESADB         IHESAP                       240            PLISUM          PLISUM
+      244            PLISUM          PLISUM                       258            PLISUM          PLISUM
+      25C            PLISUM          PLISUM                       260            IHELDOB         IHELDO
+      264            IHEDOBB         IHEDOB                       268            IHEDOBB         IHEDOB
+      26C            IHEIOBT         IHEIOB                       270            IHEIOBC         IHEIOB
+      248            IHESAFA         IHESAP                       274            IHESAFB         IHESAP
+      278            IHESPRT         IHESPRT                      2F8            IHESPRT         IHESPRT
+      2FC            PLISUM          PLISUM                       304            IHESPRT         IHESPRT
+      308            PLISUM          PLISUM                       3D0            PLISUM          PLISUM
+      3E0            IHESAPC         IHESAP                       6B4            IHEDMAA         IHEDMA
+      6B8            IHEUPAB         IHEUPA                       6BC            IHEVSCA         IHEVSC
+      6C0            IHEVSEB         IHEVSE                       6C4            IHEVQCA         IHEVQC
+      744            IHEVFBA         IHEVFB                       748            IHEVFCA         IHEVFC
+      750            IHEVFAA         IHEVFA                       754            IHEVPAA         IHEVPA
+      758            IHEVKGA         IHEVKG                       75C            IHEVPDA         IHEVPD
+      760            IHEVKFA         IHEVKF                       764            IHEVPBA         IHEVPB
+      768            IHEVPCA         IHEVPC                       794            IHEVFDA         IHEVFD
+      798            IHEVFEA         IHEVFE                       7A0            IHEVPHA         IHEVPH
+      7A4            IHEVPGA         IHEVPG                       7A8            IHEVKCA         IHEVKC
+      7AC            IHEVPFA         IHEVPF                       7B0            IHEVKBA         IHEVKB
+      7B4            IHEVPEA         IHEVPE                       A08            IHEVSEB         IHEVSE
+      A8C            IHEERRC         IHEERR                       AA8            IHEERRB         IHEERR
+      AFC            IHEVSCA         IHEVSC                       DF0            IHEERRB         IHEERR
+      DF4            IHEERRC         IHEERR                       EE4            IHEERRC         IHEERR
+     1138            IHEERRB         IHEERR                      1E54            IHEERRB         IHEERR
+     232C            IHEERRB         IHEERR                      251C            IHEERRB         IHEERR
+     26A0            IHEERRC         IHEERR                      26B0            IHEERRB         IHEERR
+     28A0            IHEERRC         IHEERR                      28A4            IHEERRB         IHEERR
+     29B0            IHEERRB         IHEERR                      2C20            IHEERRB         IHEERR
+     2EA4            IHEERRB         IHEERR                      2F68            IHEERRB         IHEERR
+     3664            IHEM91A         IHEM91                      3668            IHEM91B         IHEM91
+     366C            IHEM91C         IHEM91                      3670            IHEABND         IHEABN
+     3694            IHETERA         IHETER                      3828            IHEERRC         IHEERR
+     3A74            IHEERRC         IHEERR                      3A78            IHEIODP         IHEIOD
+     3A7C            IHEIODT         IHEIOD                      3A80            IHEDNCA         IHEDNC
+     3A84            IHEVSCA         IHEVSC                      3A88            IHEVSEA         IHEVSE
+     3A8C            IHEVSBA         IHEVSB                      3A90            IHEVSFA         IHEVSF
+     3D20            IHEIOFA         IHEIOF                      3D24            IHEERRB         IHEERR
+     3D28            IHEERRC         IHEERR                      4004            IHEERRB         IHEERR
+     4008            IHEERRC         IHEERR                      41CC            IHEIOPA         IHEIOP
+     41D0            IHEIOPB         IHEIOP                      41D4            IHEIOPC         IHEIOP
+     41D8            IHEIOPA         IHEIOP                      41DC            IHEOCLC         IHEOCL
+     41F0            IHEERRB         IHEERR                      41F4            IHEERRC         IHEERR
+
+  LOCATION  REFERS TO SYMBOL  IN CONTROL SECTION             LOCATION  REFERS TO SYMBOL  IN CONTROL SECTION
+     43D4            IHEIOFA         IHEIOF                      43D8            IHEERRB         IHEERR
+     43DC            IHEERRC         IHEERR                      4950            IHEIOFA         IHEIOF
+     4958            IHEERRB         IHEERR                      495C            IHEERRC         IHEERR
+     4D74            IHEERRC         IHEERR                      4D78            IHEIOFA         IHEIOF
+     4D7C            IHEVSBA         IHEVSB                      4D80            IHEVSCA         IHEVSC
+     4D84            IHEDNCA         IHEDNC                      57A4            IHEMAIN         IHEMAIN
+     57C4            IHEOCLD         IHEOCL                      57C8            IHESIZE         IHESIZ
+     57CC            IHEBEGA         IHEBEG                      5850            IHEITAX         IHEIOF
+     5854            IHEERRB         IHEERR                      5858            IHEERRC         IHEERR
+     585C            IHETABS         IHETAB                      5860            IHEITAZ         IHEIOF
+     4FF5            IHEERRA         IHEERR                      5894            IHEPRTA         IHEPRT
+     5898            IHEPRTB         IHEPRT                      589C            IHEDDOD         IHEDDO
+     58A0            IHEOCLC         IHEOCL                      5B90            IHEIOFA         IHEIOF
+     5B94            IHELDOC         IHELDO                      5B98            IHEPRTB         IHEPRT
+     5B9C            IHEDDPA         IHEDDP                      5BA0            IHEDDPB         IHEDDP
+     5BA4            IHEDDPC         IHEDDP                      5BA8            IHEDDPD         IHEDDP
+     5E84            IHEOCLA         IHEOCL                      5E88            IHEIOFA         IHEIOF
+     5E8C            IHESPRT         IHESPRT
+  LOCATION   394C REQUESTS CUMULATIVE PSEUDO REGISTER LENGTH
+
+ PSEUDO REGISTERS
+
+
+    NAME    ORIGIN  LENGTH        NAME    ORIGIN  LENGTH        NAME    ORIGIN  LENGTH        NAME    ORIGIN  LENGTH
+  IHEQINV       00       4      IHEQERR        4       4      IHEQTIC        8       4      IHEQLWF        C       4
+  IHEQSLA       10       4      IHEQLW0       14       4      *PLISUMB      18       4      *PLISUMC      1C       4
+  IHEQSPR       20       4      IHEQLSA       24       4      IHEQLW1       28       4      IHEQLW2       2C       4
+  IHEQLW3       30       4      IHEQLW4       34       4      IHEQLWE       38       4      IHEQLCA       3C       4
+  IHEQVDA       40       4      IHEQFVD       44       4      IHEQLPR       48       4      IHEQFOP       4C       4
+  IHEQCFL       50       8      IHEQADC       58       4      IHEQXLV       5C       8      IHEQEVT       64       8
+
+  IHEQSAR       6C       4      IHEQRTC       70       4      IHEQSFC       74       4
+ TOTAL LENGTH OF PSEUDO REGISTERS      78
+ ENTRY ADDRESS      3D8
+
+ TOTAL LENGTH      6168
+****PLISUM    NOW REPLACED IN DATA SET
+AUTHORIZATION CODE IS         0.

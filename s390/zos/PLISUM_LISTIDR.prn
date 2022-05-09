@@ -1,0 +1,34 @@
+1  LISTIDR  DDN=LOADLIB,MEMBER=PLISUM
+1                                  *****  M O D U L E   S U M M A R Y  *****
+0         MEMBER NAME   PLISUM                               MAIN ENTRY POINT  0003D8
+0                  ** ALIASES **                   SECONDARY ENTRY POINT ADDRESSES ASSOCIATED WITH ALIASES:
+-------------------------------------------------------------------------------------------------------------------------
+0                       ****   LINKAGE EDITOR ATTRIBUTES OF MODULE   ****
+0                **   BIT  STATUS         BIT  STATUS         BIT  STATUS         BIT  STATUS   **
+0                      0  NOT-RENT         1  NOT-REUS         2  NOT-OVLY         3  NOT-TEST
+                       4  NOT-OL           5  BLOCK            6  EXEC             7  MULTI-RCD
+                       8  NOT-DC           9  ZERO-ORG         10 EP > ZERO        11 RLD
+                       12 EDIT             13 NO-SYMS          14 F-LEVEL          15 NOT-REFR
+0------------------------------------------------------------------------------------------------------------------------
+-                                    MODULE SSI:  NONE
+                                     APFCODE      00000000
+0                   *****LOAD MODULE PROCESSED BY VS LINKAGE EDITOR
+1                                           LISTIDR FOR LOAD MODULE PLISUM                      PAGE 0001
+
+0                         THIS LOAD MODULE CONTAINS NO INFORMATION SUPPLIED BY IMASPZAP
+0------------------------------------------------------------------------------------------------------------------------
+0         THIS LOAD MODULE WAS PRODUCED BY LINKAGE EDITOR 5752SC104  AT LEVEL 03.08 ON DAY 267 OF YEAR 21  AT 17:16:39.
+0------------------------------------------------------------------------------------------------------------------------
+0          CSECT        TRANSLATOR               VR.MD                          YR/DY
+0          IHESAP       360SAS037                21.00                          72/315
+0------------------------------------------------------------------------------------------------------------------------
+0          CSECT                       YR/DAY                    USER DATA
+0          IHEDDP                      72/154                    RSI21400052
+           IHEDMA                      72/154                    RSI21400053
+           IHELDO                      72/154                    RSI21400041
+           IHEPRT                      72/154                    RSI21400045
+           IHESAP                      72/356                    RSI23150427
+           IHEVFB                      72/154                    RSI21400034
+           IHEVKF                      72/154                    RSI21400035
+           IHEVPE                      71/322                    RSI12960080
+0------------------------------------------------------------------------------------------------------------------------

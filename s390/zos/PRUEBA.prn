@@ -1,0 +1,316 @@
+1                                               EXTERNAL SYMBOL DICTIONARY                                      PAGE    1
+-SYMBOL   TYPE  ID   ADDR  LENGTH LDID                                                            ASM 0201 19.19 05/08/22
+0          PC  0001 000000 00008C                                                                                        
+ @@CRT0    ER  0002                                                                                                      
+ @@MAIN    LD       00000C        0001                                                                                   
+ MAIN      LD       00001C        0001                                                                                   
+ PRINTF    ER  0003                                                                                                      
+1                                                                                                               PAGE    2
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 19.19 05/08/22
+0                                      1          COPY  PDPTOP                                                           
+                                       2 **********************************************************************          
+                                       3 *                                                                    *          
+                                       4 *  This macro was written by Paul Edwards                            *          
+                                       5 *  Released to the public domain                                     *          
+                                       6 *                                                                    *          
+                                       7 **********************************************************************          
+                                       8 **********************************************************************          
+                                       9 *                                                                    *          
+                                      10 *  PDPTOP - standard code for the start of every assembler file.     *          
+                                      11 *                                                                    *          
+                                      12 *  (version customized for S/370 - see PDPTOP/PDPORIG for original)  *          
+                                      13 *                                                                    *          
+                                      14 **********************************************************************          
+                                      15 *                                                                               
+                                      16 * Is the GCC or C/370 calling convention being used?                            
+                                      17 *                                                                               
+                                      18          GBLC &COMP               Declare compiler switch                       
+                                      19 *                                                                               
+                                      20 * What system are the compiles being done for?                                  
+                                      21 *                                                                               
+                                      22          GBLC &SYS                Declare variable for system                   
+                                      23 *                                                                               
+                                      24 * Which OS are we targetting?                                                   
+                                      25 *                                                                               
+                                      26          GBLC &OS                 Declare compiler switch                       
+                                      27 *                                                                               
+                                      28 * Are PUTs done in locate or move mode?                                         
+                                      29 *                                                                               
+                                      30          GBLC &OUTM                                                             
+                                      31 *                                                                               
+                                      32 *                                                                               
+                                      33 *                                                                               
+                                      34 &COMP    SETC 'GCC'               Indicate that this is for GCC                 
+                                      35 * &COMP    SETC 'C370'            Indicate that this is for C/370               
+                                      36 &SYS     SETC 'S370'              Define either S370, S380 or S390              
+                                      37 &OUTM    SETC 'M'                 Indicate move mode                            
+                                      38 * &OUTM    SETC 'L'               Indicate locate mode                          
+                                      39 &OS      SETC 'UNKNOWN'           Indicate that the OS is not known             
+                                      40 * &OS      SETC 'MVS'             Indicate that this is for MVS                 
+                                      41 * &OS      SETC 'MUSIC'           Indicate that this is for MUSIC/SP            
+                                      42 *                                                                               
+                                      43 * AMODE/RMODE not available on S370. In the S/370 model,                        
+                                      44 * everything is 24-bit so these considerations are not                          
+                                      45 * important.                                                                    
+                                      46 *                                                                               
+                                      47 *        AMODE ANY                                                              
+                                      48 *        RMODE ANY                                                              
+                                      49 *                                                                               
+ 000000                               50          CSECT                                                                  
+                                      51 * Program text area                                                             
+                             00000    52 LC0      EQU   *                                                                
+ 000000 6C97                          53          DC    C'%p'                                                            
+ 000002 15                            54          DC    X'15'                                                            
+ 000003 00                            55          DC    X'0'                                                             
+1                                                                                                               PAGE    3
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 19.19 05/08/22
+0000004                               56          DS    0F                                                               
+ 000004 C7C3C3D4E5E25A5A              57          DC    C'GCCMVS]]'                                                      
+                                      58          EXTRN @@CRT0                                                           
+                                      59          ENTRY @@MAIN                                                           
+ 00000C                               60 @@MAIN   DS    0H                                                               
+                             0000C    61          USING *,15                                                             
+ 00000C 58F0 F00C      00018          62          L     15,=V(@@CRT0)                                                    
+ 000010 07FF                          63          BR    15                                                               
+                                      64          DROP  15                                                               
+ 000018                               65          LTORG                                                                  
+ 000018 00000000                      66                =V(@@CRT0)                                                       
+                                      67 * X-func main prologue                                                          
+                                      68 MAIN     PDPPRLG CINDEX=0,FRAME=96,BASER=12,ENTRY=YES                           
+                                      69+*                                                                               
+                                      70+* The standard GCC entry prolog macro                                           
+                                      71+* by Chris Langford and Dave Jones                                              
+                                      72+* August, 2006                                                                  
+                                      73+*                                                                               
+                                      74+* This code is in the public domain and can be used without                     
+                                      75+* restriction in any application, either commercial or non-commerical,          
+                                      76+* and can be freely redistributed.                                              
+                                      77+*                                                                               
+                                      78+*                                                                               
+                                      79+         ENTRY MAIN                                                             
+ 00001C                               80+MAIN     DS    0H                                                               
+                             0001C    81+         USING *,12                                                             
+ 00001C 47F0 F00A      0000A          82+         B     10(0,15)                          BRANCH AROUND ID       00450000
+ 000020 04                            83+         DC    AL1(4)                            LENGTH OF IDENTIFIER   00550000
+ 000021 D4C1C9D5                      84+         DC    CL4'MAIN'                         IDENTIFIER             00750000
+ 000025 00                                                                                                               
+ 000026 90EC D00C      0000C          85+         STM   14,12,12(13)                      SAVE REGISTERS         02950000
+ 00002A 18CF                          86+         LR    12,15                                                            
+ 00002C 58F0 D04C      0004C          87+         L     15,76(,13)                                                       
+ 000030 50D0 F004      00004          88+         ST    13,4(,15)                                                        
+ 000034 50F0 D008      00008          89+         ST    15,8(,13)                                                        
+ 000038 18DF                          90+         LR    13,15                                                            
+ 00003A 41F0 F060      00060          91+         LA    15,96(,15)                                                       
+ 00003E 50FD 004C      0004C          92+         ST    15,76(13)                                                        
+ 000042 47F0 C02C      00048          93          B     FEN0                                                             
+ 000048                               94          LTORG                                                                  
+                             00048    95 FEN0     EQU   *                                                                
+                                      96          DROP  12                                                               
+ 000048 05C0                          97          BALR  12,0                                                             
+                             0004A    98          USING *,12                                                             
+                             0004A    99 PG0      EQU   *                                                                
+ 00004A 18B1                         100          LR    11,1                                                             
+ 00004C 58A0 C02E      00078         101          L     10,=A(PGT0)                                                      
+                                     102 * Function main code                                                            
+ 000050 D203 D058 C032 00058 0007C   103          MVC   88(4,13),=A(LC0)                                                 
+ 000056 D203 D05C C036 0005C 00080   104          MVC   92(4,13),=A(MAIN)                                                
+ 00005C 4110 D058      00058         105          LA    1,88(,13)                                                        
+ 000060 58F0 C03A      00084         106          L     15,=V(PRINTF)                                                    
+ 000064 05EF                         107          BALR  14,15                                                            
+ 000066 1FFF                         108          SLR   15,15                                                            
+                                     109 * Function main epilogue                                                        
+1                                                                                                               PAGE    4
+-  LOC  OBJECT CODE    ADDR1 ADDR2  STMT   SOURCE STATEMENT                                       ASM 0201 19.19 05/08/22
+0                                    110          PDPEPIL                                                                
+                                     111+*                                                                               
+                                     112+* The standard GCC exit code macro                                              
+                                     113+* by Chris Langford and Dave Jones                                              
+                                     114+* August, 2006                                                                  
+                                     115+*                                                                               
+                                     116+* This code is in the public domain and can be used without                     
+                                     117+* restriction in any application, either commercial or non-commerical,          
+                                     118+* and can be freely redistributed.                                              
+                                     119+*                                                                               
+ 000068 58D0 D004      00004         120+         L     13,4(,13)                                                        
+ 00006C 58ED 000C      0000C         121+         L     14,12(13,0)                       RESTORE REGISTER 14    01200000
+ 000070 980C D014      00014         122+         LM    0,12,20(13)                       RESTORE THE REGISTERS  01000000
+ 000074 07FE                         123+         BR    14                                RETURN                 02000000
+                                     124 * Function main literal pool                                                    
+ 000078                              125          DS    0F                                                               
+ 000078                              126          LTORG                                                                  
+ 000078 00000088                     127                =A(PGT0)                                                         
+ 00007C 00000000                     128                =A(LC0)                                                          
+ 000080 0000001C                     129                =A(MAIN)                                                         
+ 000084 00000000                     130                =V(PRINTF)                                                       
+                                     131 * Function main page table                                                      
+ 000088                              132          DS    0F                                                               
+                             00088   133 PGT0     EQU   *                                                                
+ 000088 0000004A                     134          DC    A(PG0)                                                           
+ 00000C                              135          END   @@MAIN                                                           
+1                                                  RELOCATION DICTIONARY                                        PAGE    5
+-POS.ID   REL.ID   FLAGS   ADDRESS                                                                ASM 0201 19.19 05/08/22
+0 0001     0001      0C     000078                                                                                       
+  0001     0001      0C     00007C                                                                                       
+  0001     0001      0C     000080                                                                                       
+  0001     0001      0C     000088                                                                                       
+  0001     0002      1C     000018                                                                                       
+  0001     0003      1C     000084                                                                                       
+                                                                                                                         
+1                                                  CROSS-REFERENCE                                              PAGE    6
+-SYMBOL    LEN   VALUE   DEFN    REFERENCES                                                       ASM 0201 19.19 05/08/22
+0@@CRT0   00001 00000000 00058                                                                                           
+ @@MAIN   00002 0000000C 00060  00059 00135                                                                              
+ FEN0     00001 00000048 00095  00093                                                                                    
+ LC0      00001 00000000 00052  00128                                                                                    
+ MAIN     00002 0000001C 00080  00079 00129                                                                              
+ PGT0     00001 00000088 00133  00127                                                                                    
+ PG0      00001 0000004A 00099  00134                                                                                    
+1                                                  LITERAL CROSS-REFERENCE                                      PAGE    7
+-SYMBOL    LEN   VALUE   DEFN    REFERENCES                                                       ASM 0201 19.19 05/08/22
+0=V(@@CRT0)                                                                                                              
+          00004 00000018 00066  00062                                                                                    
+ =A(PGT0) 00004 00000078 00127  00101                                                                                    
+ =A(LC0)  00004 0000007C 00128  00103                                                                                    
+ =A(MAIN) 00004 00000080 00129  00104                                                                                    
+ =V(PRINTF)                                                                                                              
+          00004 00000084 00130  00106                                                                                    
+1                                                  ASSEMBLER DIAGNOSTICS AND STATISTICS                         PAGE    8
+-                                                                                                 ASM 0201 19.19 05/08/22
+0NO STATEMENTS FLAGGED IN THIS ASSEMBLY                                                                                  
+ HIGHEST SEVERITY WAS    0                                                                                               
+ OPTIONS FOR THIS ASSEMBLY                                                                                               
+   ALIGN, ALOGIC, BUFSIZE(STD), DECK, ESD, FLAG(0), LINECOUNT(55), LIST, NOMCALL, YFLAG, WORKSIZE(2097152)               
+   NOMLOGIC, NONUMBER, NOOBJECT, NORENT, RLD, NOSTMT, NOLIBMAC, NOTERMINAL, NOTEST, XREF                                 
+   SYSPARM()                                                                                                             
+ WORK FILE BUFFER SIZE/NUMBER = 7294/ 1                                                                                  
+ TOTAL RECORDS READ FROM SYSTEM INPUT         45                                                                         
+ TOTAL RECORDS READ FROM SYSTEM LIBRARY      846                                                                         
+ TOTAL RECORDS PUNCHED                         8                                                                         
+ TOTAL RECORDS PRINTED                       189                                                                         
+1                                                                                                                        
+  F64-LEVEL LINKAGE EDITOR OPTIONS SPECIFIED XREF,LIST,MAP                                                               
+           DEFAULT OPTION(S) USED -  SIZE=(231424,55296)                                                                 
+0                                                                                                                        
+0                                                CROSS REFERENCE TABLE                                                   
+                                                                                                                         
+0  CONTROL SECTION                       ENTRY                                                                           
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION   
+  $PRIVATE       00      8C                                                                                              
+                                         @@MAIN         C    MAIN          1C                                            
+  $PRIVATE *     90     13C                                                                                              
+                                         @@CRT0        98    @@EXITA      18C                                            
+  $PRIVATE *    1D0    7BDC                                                                                              
+                                         @@DOPERM     200    @@STDIN      208    @@STDOUT     20C    @@STDERR     210    
+                                         @@STDPCH     21C    @@GTIN       220    @@GTOUT      27C    @@GTERR      2D4    
+                                         PRINTF       32C    FPRINTF      3AC    VFPRINTF     420    FOPEN        4A0    
+                                         FCLOSE      164C    FPUTC       2574    REMOVE      261C    RENAME      2728    
+                                         SPRINTF     2828    VSPRINTF    28A0    UNGETC      2928    FGETC       29C4    
+                                         FSEEK       2A64    FTELL       2D38    FSETPOS     2D98    FGETPOS     2E10    
+                                         REWIND      2E7C    CLEARERR    2EF0    PERROR      2F88    SETVBUF     3050    
+                                         SETBUF      30A0    FREOPEN     3140    FFLUSH      32FC    TMPNAM      33D0    
+                                         TMPFILE     3464    FSCANF      34D4    SCANF       3554    SSCANF      35E0    
+                                         GETS        463C    PUTS        4714    GETC        47BC    PUTC        481C    
+                                         GETCHAR     4884    PUTCHAR     48F0    FEOF        4968    FERROR      49C0    
+                                         FGETS       4A18    FPUTS       4CF8    FWRITE      4F90    FREAD       5EF8    
+                                         @@USERFI    7554                                                                
+  $PRIVATE *   7DB0      64                                                                                              
+                                         @@ERRNO     7DB0    @@GET@ER    7DB4                                            
+  $PRIVATE *   7E18     7D4                                                                                              
+                                         @@TSO       7E18    @@UPSI      7E1C    @@START     7F40    @@EXIT      8434    
+                                         @@EPLIST    85E4    @@PLIST     85E8                                            
+  $PRIVATE *   85F0     C14                                                                                              
+                                         @@ISBUF     8BF8    @@TOLOW     8BFC    @@TOUP      8C00    ISALNUM     8C04    
+                                         ISALPHA     8C7C    ISCNTRL     8CF4    ISDIGIT     8D6C    ISGRAPH     8DE4    
+                                         ISLOWER     8E5C    ISPRINT     8ED4    ISPUNCT     8F4C    ISSPACE     8FC4    
+                                         ISUPPER     903C    ISXDIGIT    90B4    TOLOWER     9134    TOUPPER     919C    
+  $PRIVATE *   9208    1520                                                                                              
+                                         MALLOC      9208    CALLOC      926C    REALLOC     931C    FREE        93E8    
+                                         ABORT       9454    EXIT        94D0    QSORT       9534    SRAND       97CC    
+                                         RAND        9824    ATOF        98A0    STRTOD      9910    ATOI        9BA4    
+                                         ATOL        9C1C    STRTOUL     9C94    STRTOL      9E6C    MBLEN       9F68    
+                                         MBTOWC      9FDC    WCTOMB      A05C    MBSTOWCS    A0C0    WCSTOMBS    A160    
+                                         ABS         A200    DIV         A250    LABS        A2C8    LDIV        A320    
+                                         ATEXIT      A3A0    GETENV      A438    SYSTEM      A488    BSEARCH     A5F0    
+                                         @@USEREX    A6A8                                                                
+  $PRIVATE *   A728     D8C                                                                                              
+                                         MEMMOVE     A728    STRCPY      A7DC    STRNCPY     A858    STRCAT      A900    
+                                         STRNCAT     A9A8    MEMCMP      AA68    STRCMP      AB00    STRCOLL     ABB4    
+                                         STRNCMP     AC1C    STRXFRM     ACBC    MEMCHR      AD3C    STRCHR      ADBC    
+                                         STRCSPN     AE48    STRPBRK     AEF0    STRRCHR     AF98    STRSPN      B01C    
+                                         STRSTR      B0D0    STRTOK      B19C    MEMSET      B2A8    STRERROR    B34C    
+                                         STRLEN      B3B8    MEMCPY      B438                                            
+1                                                                                                                        
+0    NAME    ORIGIN  LENGTH                NAME   LOCATION     NAME   LOCATION     NAME   LOCATION     NAME   LOCATION   
+  $PRIVATE *   B4B8    1C5C                                                                                              
+                                         @@AOPEN     B4B8    @@ALINE     BD5E    @@AREAD     BDF4    @@AWRITE    C2A4    
+                                         @@ANOTE     C500    @@APOINT    C55E    @@ACLOSE    C608    @@GETM      C87A    
+                                         @@FREEM     C8DC    @@GETCLK    C91C    @@GETTZ     C96C    @@SYSTEM    C976    
+                                         @@IDCAMS    CBA4    @@DYNAL     CE18    @@SVC99     D07A    @@SETJ      D0EE    
+                                         @@LONGJ     D0FC                                                                
+  $PRIVATE *   D118     230                                                                                              
+                                         SIGNAL      D134    RAISE       D19C    @@SIGDFL    D210    @@SIGERR    D2A4    
+                                         @@SIGIGN    D2F8                                                                
+0                                                                                                                        
+0  LOCATION  REFERS TO SYMBOL  IN CONTROL SECTION             LOCATION  REFERS TO SYMBOL  IN CONTROL SECTION             
+        18            @@CRT0                                        84            PRINTF                                 
+       148            @@START                                      5B0            MALLOC                                 
+       7FC            MALLOC                                       5B8            FREE                                   
+      1840            FREE                                         698            STRCPY                                 
+      15B4            STRCPY                                       D18            STRNCMP                                
+      15A8            STRNCMP                                     1584            @@GET@ER                               
+      159C            STRCHR                                      15BC            STRCSPN                                
+      15C0            @@TOUP                                      15DC            @@TSO                                  
+      15FC            @@AOPEN                                     1610            @@ACLOSE                               
+      1834            @@ACLOSE                                    162C            STRCAT                                 
+      1634            STRLEN                                      1638            @@DYNAL                                
+      2CF0            STRCPY                                      3034            @@GET@ER                               
+      1C0C            STRCHR                                      2524            STRCHR                                 
+      2534            @@TOUP                                      26F8            @@TOUP                                 
+      2810            @@TOUP                                      2CF8            STRCAT                                 
+      1C20            STRLEN                                      2550            STRLEN                                 
+      2700            STRLEN                                      2818            STRLEN                                 
+      2D1C            STRLEN                                      250C            @@ISBUF                                
+      2558            MEMCHR                                      2704            @@IDCAMS                               
+      281C            @@IDCAMS                                    32E4            FREE                                   
+      3450            STRCPY                                      441C            STRCHR                                 
+      440C            @@TOUP                                      43DC            @@ISBUF                                
+      4614            @@ISBUF                                     4420            MEMCHR                                 
+      33BC            @@AWRITE                                    4F64            STRCHR                                 
+      4F54            STRLEN                                      5DA0            MEMCHR                                 
+      4F78            @@AWRITE                                    5DB4            @@AWRITE                               
+      5EEC            @@AWRITE                                    4CE0            @@AREAD                                
+      4F74            MEMSET                                      5DC4            MEMSET                                 
+      6A14            STRCPY                                      6B34            STRCPY                                 
+      736C            STRCPY                                      6A2C            @@GET@ER                               
+      7380            STRCHR                                      7360            STRCAT                                 
+      6A0C            STRLEN                                      6B2C            STRLEN                                 
+      7370            STRLEN                                      6818            MEMCHR                                 
+      680C            @@AREAD                                     6A00            MEMSET                                 
+      6B20            MEMSET                                      6A28            @@SVC99                                
+      6B3C            @@SVC99                                     83B4            @@DOPERM                               
+      83C0            FOPEN                                       83C4            @@GTOUT                                
+      85C4            @@GTOUT                                     83D0            @@GTERR                                
+      85C8            @@GTERR                                     83DC            @@GTIN                                 
+1                                                                                                                        
+0  LOCATION  REFERS TO SYMBOL  IN CONTROL SECTION             LOCATION  REFERS TO SYMBOL  IN CONTROL SECTION             
+      85CC            @@GTIN                                      83F4            @@USERFI                               
+      85BC            @@USERFI                                    83FC            STRCHR                                 
+      840C            FPRINTF                                     8410            FCLOSE                                 
+      85D0            FCLOSE                                      8418            @@EXITA                                
+      85D8            @@EXITA                                     8420            PRINTF                                 
+      8424            MAIN                                        85D4            FFLUSH                                 
+      9264            @@GETM                                      9314            MEMSET                                 
+      944C            @@FREEM                                     94C0            RAISE                                  
+      952C            @@EXIT                                      9B7C            @@ISBUF                                
+      9E3C            @@ISBUF                                     9F4C            @@ISBUF                                
+      9E54            @@TOUP                                      A5D0            @@TOUP                                 
+      A154            STRNCPY                                     A1F4            STRNCPY                                
+      A158            STRLEN                                      A1F8            STRLEN                                 
+      A5D8            STRLEN                                      A5C8            STRCHR                                 
+      A5DC            @@TSO                                       A5E4            @@SYSTEM                               
+      D298            EXIT                                                                                               
+  ENTRY ADDRESS        C                                                                                                 
+0 TOTAL LENGTH      D348                                                                                                 
+ ****PRUEBA    DOES NOT EXIST BUT HAS BEEN ADDED TO DATA SET                                                             
+ AUTHORIZATION CODE IS         0.                                                                                        
+                                                                                                                         
