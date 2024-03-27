@@ -1,0 +1,18 @@
+( +=[2] macro implementation )
+
+: ADD ( a b -- a+b )
+  +
+;
+
+: swap SWAP ;
+: drop POP ;
+
+: +=[2] ( a b a b -- b[2]=+a )
+ [2] ( a b a b[2] )
+ ADD ( a b a+b[2] )
+ swap ( a a+b[2] )
+ =[2]
+ drop
+;
+
+1 0x8000 {DUP2} +=[2]
