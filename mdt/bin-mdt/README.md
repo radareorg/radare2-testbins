@@ -1,0 +1,6 @@
+- `load-test.mdt` - Layout ELF
+- `load-test.b00` - Same as `load-test.mdt`
+- `load-test.b01` - mbn auth hashes. Just zeroed out for this purpose.
+- `load-test.b02` - A file with random data. Just there to test non-ELF parts.
+- `load-test.b03` - An ELF file. It is a copy of elf/analysis/hexagon-hello-loop
+- `load-test.b04` - An ELF file with relocs. It is a copy of elf/hexagon/relocs
