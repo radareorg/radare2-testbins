@@ -6,3 +6,4 @@ other/ragg2/hi.c.o
 other/ragg2/hi.c.text
 other/ragg2/hi.c.s
 s390/zos/prueba/prueba.o
+elf/new/compact-relocs.o
