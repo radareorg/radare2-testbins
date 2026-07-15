@@ -2,6 +2,7 @@
 *.un~
 *.tmp
 .DS_Store
+other/projects/ls
 other/ragg2/hi.c.o
 other/ragg2/hi.c.text
 other/ragg2/hi.c.s
