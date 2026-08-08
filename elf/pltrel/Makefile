@@ -13,3 +13,9 @@ all:
 	python3 -c "import struct;p='aarch64-pac-noshdr.so';d=bytearray(open(p,'rb').read());struct.pack_into('<Q',d,0x28,0);struct.pack_into('<H',d,0x3c,0);struct.pack_into('<H',d,0x3e,0);open(p,'wb').write(d)"
 	powerpc-linux-gnu-gcc -O1 $(LDCOMMON) -o ppc32be.so plt.c
 	powerpc-linux-gnu-gcc -mlittle-endian -O1 $(LDCOMMON) -o ppc32le.so plt.c
+	cp x86_64-retpoline.so x86_64-retpoline-noshdr.so
+	python3 -c "import struct;p='x86_64-retpoline-noshdr.so';d=bytearray(open(p,'rb').read());struct.pack_into('<Q',d,0x28,0);struct.pack_into('<H',d,0x3c,0);struct.pack_into('<H',d,0x3e,0);open(p,'wb').write(d)"
+	# the first and last call thunks exchanged, which a linker reaches by emitting
+	# one thunk per input file rather than one per relocation
+	cp ppc32be.so ppc32be-swapped.so
+	python3 -c "p='ppc32be-swapped.so';d=bytearray(open(p,'rb').read());a,b=0x260,0x280;d[a:a+16],d[b:b+16]=d[b:b+16],d[a:a+16];open(p,'wb').write(d)"
