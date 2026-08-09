@@ -32,3 +32,17 @@ all:
 	# one relocation leaves no stride to measure between two got slots
 	$(CLANG64) -O1 $(LDCOMMON) -Wl,-z,retpolineplt -o x86_64-retpoline-one-noshdr.so one.c
 	python3 -c "import struct;p='x86_64-retpoline-one-noshdr.so';d=bytearray(open(p,'rb').read());struct.pack_into('<Q',d,0x28,0);struct.pack_into('<H',d,0x3c,0);struct.pack_into('<H',d,0x3e,0);open(p,'wb').write(d)"
+	# --plt-align pads every stub to 32, and the tls glink entry keeps its 8 word
+	# prefix on top of that, so the entries are not a uniform grid
+	powerpc-linux-gnu-gcc -O1 $(LDCOMMON) -o tlsdef.so tlsdef.S
+	powerpc-linux-gnu-gcc -O1 $(LDCOMMON) -Wl,--plt-align=5 -o ppc32be-align-tls.so tls.c ./tlsdef.so
+	rm -f tlsdef.so
+	# a lone bti entry has no next entry to measure the stride against; gcc because
+	# clang resolves the local ifunc call before it can reach the plt
+	gcc -fPIC -O1 -mbranch-protection=bti -c ifunc.c -o btiifunc.o
+	ld.lld -shared -z force-bti --build-id=none -z max-page-size=0x1000 -z noseparate-code -o aarch64-bti-lld-one.so btiifunc.o
+	rm -f btiifunc.o
+	# without the sections that entry has neither a neighbour nor a size to divide,
+	# so only the nops padding it out say how long it is
+	cp aarch64-bti-lld-one.so aarch64-bti-lld-one-noshdr.so
+	python3 -c "import struct;p='aarch64-bti-lld-one-noshdr.so';d=bytearray(open(p,'rb').read());struct.pack_into('<Q',d,0x28,0);struct.pack_into('<H',d,0x3c,0);struct.pack_into('<H',d,0x3e,0);open(p,'wb').write(d)"
