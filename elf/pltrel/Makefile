@@ -26,3 +26,9 @@ all:
 	clang --target=powerpc-linux-gnu -fPIC -O1 -c plt.c -o ppc32.o
 	ld.lld -m elf32ppc -shared --build-id=none -o ppc32be-lld.so ppc32.o
 	rm -f bti.o ppc32.o
+	# bfd keeps bti entries at 16 bytes, and with no sections only the entry bytes say so
+	gcc -O1 $(LDCOMMON) -mbranch-protection=bti -Wl,-z,force-bti -o aarch64-bti-bfd-noshdr.so plt.c
+	python3 -c "import struct;p='aarch64-bti-bfd-noshdr.so';d=bytearray(open(p,'rb').read());struct.pack_into('<Q',d,0x28,0);struct.pack_into('<H',d,0x3c,0);struct.pack_into('<H',d,0x3e,0);open(p,'wb').write(d)"
+	# one relocation leaves no stride to measure between two got slots
+	$(CLANG64) -O1 $(LDCOMMON) -Wl,-z,retpolineplt -o x86_64-retpoline-one-noshdr.so one.c
+	python3 -c "import struct;p='x86_64-retpoline-one-noshdr.so';d=bytearray(open(p,'rb').read());struct.pack_into('<Q',d,0x28,0);struct.pack_into('<H',d,0x3c,0);struct.pack_into('<H',d,0x3e,0);open(p,'wb').write(d)"
