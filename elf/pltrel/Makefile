@@ -19,3 +19,10 @@ all:
 	# one thunk per input file rather than one per relocation
 	cp ppc32be.so ppc32be-swapped.so
 	python3 -c "p='ppc32be-swapped.so';d=bytearray(open(p,'rb').read());a,b=0x260,0x280;d[a:a+16],d[b:b+16]=d[b:b+16],d[a:a+16];open(p,'wb').write(d)"
+	# lld grows bti-only entries to 24 bytes where bfd keeps them at 16
+	clang --target=aarch64-linux-gnu -fPIC -O1 -mbranch-protection=bti -c plt.c -o bti.o
+	ld.lld -shared -z force-bti --build-id=none -z max-page-size=0x1000 -z noseparate-code -o aarch64-bti-lld.so bti.o
+	# default page size keeps .plt far enough from r30 to force the addis thunk form
+	clang --target=powerpc-linux-gnu -fPIC -O1 -c plt.c -o ppc32.o
+	ld.lld -m elf32ppc -shared --build-id=none -o ppc32be-lld.so ppc32.o
+	rm -f bti.o ppc32.o
