@@ -8,7 +8,8 @@
 import struct, sys
 
 def read_elf32(path):
-    d = bytearray(open(path, 'rb').read())
+    with open(path, 'rb') as f:
+        d = bytearray(f.read())
     assert d[:6] == b'\x7fELF\x01\x01', 'ELF32 LE expected'
     e_shoff, = struct.unpack_from('<I', d, 0x20)
     e_shnum, = struct.unpack_from('<H', d, 0x30)
@@ -100,5 +101,6 @@ for ks in ksecs:
     kd[tgt['off']:tgt['off'] + tgt['size']] = \
         cd[src['off']:src['off'] + src['size']]
 
-open(out_path, 'wb').write(kd)
+with open(out_path, 'wb') as f:
+    f.write(kd)
 print('wrote', out_path)
