@@ -1,5 +1,5 @@
-# Thumb ET_REL with a branch to an SHN_ABS Thumb function: S is the value
-# with bit 0 cleared, so the bl lands on 0x08000100.
+# Thumb ET_REL with a branch to an SHN_ABS Thumb function: the bl lands on
+# 0x08000100, while the R_ARM_ABS32 word keeps the Thumb bit, 0x08000101.
 #   /usr/lib/llvm-21/bin/llvm-mc -triple=thumbv7-linux-gnueabi -filetype=obj \
 #       -o arm-abs-thumb.use.tmp arm-abs-thumb.s
 #   /usr/lib/llvm-21/bin/llvm-mc -triple=thumbv7-linux-gnueabi -filetype=obj \
@@ -18,4 +18,7 @@
 	.thumb_func
 f:	bl romfn
 	bx lr
+	.data
+	.globl fnptr
+fnptr:	.word romfn
 .endif
