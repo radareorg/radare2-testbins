@@ -1,6 +1,10 @@
 #include <stdint.h>
 
 // R2R db/anal/globals
+// llvm-objcopy --strip-all elf/anal-globals elf/anal-globals-stripped
+// llvm-objcopy --strip-all mach0/anal-globals mach0/anal-globals-stripped
+// The stripped Mach-O also clears LC_DYLD_EXPORTS_TRIE dataoff/datasize.
+// Keep code/data addresses unchanged so both variants exercise the same accesses.
 
 struct GlobalPair {
 	int count;
