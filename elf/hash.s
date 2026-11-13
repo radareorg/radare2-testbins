@@ -1,0 +1,47 @@
+	.text
+	.byte 0x7f,0x45,0x4c,0x46,2,1,1,0
+	.quad 0
+	.short 3,62
+	.long 1
+	.quad 0x100,0x40,0
+	.long 0
+	.short 64,56,3,64,0,0
+# LOAD1 file 0..0x1fc
+	.long 1,4
+	.quad 0,0,0,0x1fc,0x1fc,0x1000
+# LOAD2 file 0x200 -> 0x1000
+	.long 1,4
+	.quad 0x200,0x1000,0x1000,0x10,0x10,0x1000
+# DYNAMIC
+	.long 2,4
+	.quad 0x100,0x100,0x100,0x60,0x60,8
+	.fill 0x100-0xe8,1,0
+# dynamic @0x100
+	.quad 4,0x1f8
+	.quad 6,0x160
+	.quad 5,0x1c0
+	.quad 11,24
+	.quad 10,13
+	.quad 0,0
+# symtab @0x160
+	.fill 24,1,0
+	.long 1
+	.byte 0x12,0
+	.short 1
+	.quad 0x100,1
+	.long 5
+	.byte 0x12,0
+	.short 1
+	.quad 0x101,1
+	.long 9
+	.byte 0x12,0
+	.short 1
+	.quad 0x102,1
+# strtab @0x1c0
+	.byte 0
+	.ascii "foo\0bar\0baz\0"
+	.fill 0x1f8-0x1cd,1,0
+# hash @0x1f8: nbucket mapped, nchain at 0x1fc unmapped
+	.long 1
+	.long 1
+	.fill 16,1,0
