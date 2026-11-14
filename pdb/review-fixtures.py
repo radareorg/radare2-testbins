@@ -61,7 +61,7 @@ def msf(streams):
             + directory.ljust(root_count * page_size, b'\0') + payload)
 
 
-def synthetic_pdb(publics, modules, mappings=()):
+def synthetic_pdb(publics, modules, mappings=(), module_indices=None):
     info = bytearray(original[66 * 4096:66 * 4096 + 32])
     struct.pack_into('<I', info, 28, 0)
     modifier = record(0x1001, struct.pack('<IH', 0x74, 0))
@@ -71,7 +71,8 @@ def synthetic_pdb(publics, modules, mappings=()):
     for index, procs in enumerate(modules, 7):
         stream = struct.pack('<I', 4) + b''.join(procedure(name, offset) for name, offset in procs)
         entry = bytearray(64)
-        struct.pack_into('<hI', entry, 34, index, len(stream))
+        stream_index = module_indices[index - 7] if module_indices else index
+        struct.pack_into('<hI', entry, 34, stream_index, len(stream))
         entry += b'module\0object\0'
         entry += bytes(-len(entry) % 4)
         module_info += entry
@@ -96,3 +97,9 @@ def synthetic_pdb(publics, modules, mappings=()):
       ('module_overflow', 0xfffff100), ('module_high', 0x70)]],
     [(0x1000, 0x2000), (0x1010, 0), (0x1030, 0x80000000),
      (0x1040, 0x3000), (0x1050, 0), (0x1070, 0x80001000)]))
+
+(root / 'many-module-streams.pdb').write_bytes(synthetic_pdb(
+    [], [[(f'module_{i}', i * 16)] for i in range(16384)]))
+(root / 'module-parser-indices.pdb').write_bytes(synthetic_pdb(
+    [('public', 0)], [[('first', 0x10)], [('duplicate', 0x20)], [('invalid', 0x30)]],
+    module_indices=[7, 7, 32767]))
