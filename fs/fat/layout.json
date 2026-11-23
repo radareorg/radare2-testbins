@@ -1,0 +1,71 @@
+[
+  {
+    "bits": 12,
+    "sector": 512,
+    "cluster_size": 512,
+    "clusters": 2027,
+    "root": 6656,
+    "data": 10752,
+    "fat": 512,
+    "fat_sectors": 6,
+    "ids": {
+      "LIVE    TXT": 6656,
+      "FRAG    TXT": 6688,
+      "EMPTY   TXT": 6720,
+      "SUBDIR": 6752,
+      "PANDA~1 TXT": 6848,
+      "CROSS   TXT": 6880,
+      "GONE    TXT": 6912,
+      "CHAIN   TXT": 6944,
+      "OLDDIR": 6976,
+      "LOSTLO~1TXT": 7072
+    },
+    "size": 1048576
+  },
+  {
+    "bits": 16,
+    "sector": 1024,
+    "cluster_size": 1024,
+    "clusters": 8155,
+    "root": 33792,
+    "data": 37888,
+    "fat": 1024,
+    "fat_sectors": 16,
+    "ids": {
+      "LIVE    TXT": 33792,
+      "FRAG    TXT": 33824,
+      "EMPTY   TXT": 33856,
+      "SUBDIR": 33888,
+      "PANDA~1 TXT": 33984,
+      "CROSS   TXT": 34016,
+      "GONE    TXT": 34048,
+      "CHAIN   TXT": 34080,
+      "OLDDIR": 34112,
+      "LOSTLO~1TXT": 34208
+    },
+    "size": 8388608
+  },
+  {
+    "bits": 32,
+    "sector": 512,
+    "cluster_size": 512,
+    "clusters": 68528,
+    "root": 565248,
+    "data": 565248,
+    "fat": 16384,
+    "fat_sectors": 536,
+    "ids": {
+      "LIVE    TXT": 565248,
+      "FRAG    TXT": 565280,
+      "EMPTY   TXT": 565312,
+      "SUBDIR": 565344,
+      "PANDA~1 TXT": 565440,
+      "CROSS   TXT": 565472,
+      "GONE    TXT": 565504,
+      "CHAIN   TXT": 565536,
+      "OLDDIR": 565568,
+      "LOSTLO~1TXT": 565664
+    },
+    "size": 35651584
+  }
+]
