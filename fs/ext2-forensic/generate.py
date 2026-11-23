@@ -18,6 +18,6 @@ with tempfile.TemporaryDirectory() as directory:
     deleted = temporary / 'deleted'
     deleted.write_bytes(b'Recover ext2 data\n' * 1024)
     commands = temporary / 'commands'
-    commands.write_text(f'write {live} /live\nwrite {deleted} /vanished\nrm /vanished\n')
+    commands.write_text(f'write {live} /live\nwrite {deleted} /vanished\nsymlink /link live\nrm /vanished\n')
     subprocess.run(['debugfs', '-w', '-f', str(commands), str(image)], check=True)
     (here / 'recovery.img.gz').write_bytes(gzip.compress(image.read_bytes(), mtime=0))
