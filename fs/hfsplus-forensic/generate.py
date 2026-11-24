@@ -157,6 +157,171 @@ def build(block=512, sensitive=False):
     return image, manifest
 
 
+def attribute_key(cnid, name, start=0):
+    encoded = name.encode('utf-16be')
+    return struct.pack('>HHIIH', 12 + len(encoded), 0, cnid, start, len(encoded) // 2) + encoded
+
+
+def inline_attribute(cnid, name, data):
+    return attribute_key(cnid, name) + struct.pack('>IIII', 0x10, 0, 0, len(data)) + data
+
+
+def build_names_forks():
+    image, original = build()
+    block = 512
+    epoch = 2082844800 + 1700000000
+
+    def record(parent, name, cnid, data=None, resource=None, directory=False, created=None):
+        result = bytearray(catalog_record(parent, name, cnid, data, resource, directory))
+        offset = len(key(parent, name))
+        struct.pack_into('>I', result, offset + 12, epoch - 500 if created is None else created)
+        return result
+
+    def link(parent, name, cnid, reference, directory=False):
+        result = record(parent, name, cnid, created=epoch - 900)
+        offset = len(key(parent, name))
+        struct.pack_into('>H', result, offset + 2, 0x20)
+        struct.pack_into('>III', result, offset + 44, reference,
+                         0x66647270 if directory else 0x686c6e6b,
+                         0x4d414353 if directory else 0x6866732b)
+        return result
+
+    private_name = '\0\0\0\0HFS+ Private Data'
+    dir_private_name = '.HFS+ Private Directory Data\r'
+    mappings = {'linked_data': 128, 'linked_resource': 129, 'directory_child': 130,
+                'unicode': 131, 'greek': 132, 'hangul': 133, 'escaped': 134,
+                'deleted_link_data': 135, 'deleted_link_resource': 136,
+                'lost_child': 137, 'ambiguous_child': 138}
+    contents = {'linked_data': b'Hard link contents\n', 'linked_resource': b'Linked resource\n',
+                'directory_child': b'directory child\n', 'unicode': b'unicode\n',
+                'greek': b'greek\n', 'hangul': b'hangul\n', 'escaped': b'escaped\n',
+                'deleted_link_data': b'Recovered linked file\n', 'deleted_link_resource': b'Recovered resource\n',
+                'lost_child': b'lost child\n', 'ambiguous_child': b'ambiguous child\n'}
+    for name, start in mappings.items():
+        image[start * block:start * block + len(contents[name])] = contents[name]
+
+    def payload(name):
+        return fork(len(contents[name]), [(mappings[name], 1)])
+
+    live = [record(1, 'Forensic', 2, directory=True, created=epoch - 1000),
+            thread(2, 1, 'Forensic', True),
+            record(2, private_name, 16, directory=True, created=epoch - 900),
+            record(2, dir_private_name, 17, directory=True, created=epoch - 900),
+            record(2, 'fragmented.bin', 21, fork(9 * block, [(82 + i * 2, 1) for i in range(8)], 9)),
+            record(2, 'live.txt', 20, fork(15, [(80, 1)]), fork(8, [(120, 1)])),
+            link(2, 'linked.txt', 22, 1234), link(2, 'linked-again.txt', 23, 1234),
+            link(2, 'linked-dir', 24, 41, True),
+            record(2, 'Cafe\u0301.txt', 43, payload('unicode')),
+            record(2, '\u03b1\u03b8\u03b7\u03bd\u03b1', 44, payload('greek')),
+            record(2, '\u1100\u1161.txt', 45, payload('hangul')),
+            record(2, 'percent%/file', 46, payload('escaped')),
+            record(16, 'iNode1234', 40, payload('linked_data'), payload('linked_resource')),
+            record(17, 'dir_41', 41, directory=True),
+            record(41, 'inside.txt', 42, payload('directory_child')),
+            thread(20, 2, 'live.txt'), thread(21, 2, 'fragmented.bin'),
+            thread(22, 2, 'linked.txt'), thread(23, 2, 'linked-again.txt'),
+            thread(24, 2, 'linked-dir'), thread(40, 16, 'iNode1234'),
+            thread(41, 17, 'dir_41', True)]
+    live.sort(key=lambda value: (struct.unpack_from('>I', value, 2)[0], bytes(value[8:2 + struct.unpack_from('>H', value)[0]])))
+    chunks, current = [], []
+    for value in live:
+        required = 14 + sum((len(item) + 1) & ~1 for item in current + [value]) + 2 * (len(current) + 2)
+        if required > NODE - 320:
+            chunks.append(current)
+            current = []
+        current.append(value)
+    chunks.append(current)
+    assert len(chunks) <= 3
+    leaf_ids = [2, 4, 5][:len(chunks)]
+    catalog = 20 * block
+    image[catalog:catalog + NODE] = tree_header(8, 1, 2, len(live), leaf_ids[0], leaf_ids[-1], [0, 1] + leaf_ids)
+    index = [value[0][:2 + struct.unpack_from('>H', value[0])[0]] + struct.pack('>I', leaf_id)
+             for value, leaf_id in zip(chunks, leaf_ids)]
+    image[catalog + NODE:catalog + 2 * NODE] = node(0, 2, index)[0]
+    locations = {}
+    slack_location = None
+
+    def catalog_address(number):
+        return catalog + number * NODE if number < 4 else 160 * block + (number - 4) * NODE
+
+    for order, (leaf_id, chunk) in enumerate(zip(leaf_ids, chunks)):
+        leaf, offsets, free_at = node(-1, 1, chunk, leaf_ids[order + 1] if order + 1 < len(leaf_ids) else 0,
+                               leaf_ids[order - 1] if order else 0)
+        if order + 1 == len(leaf_ids):
+            slack = record(2, 'slack.txt', 31, fork(27, [(114, 1)]))
+            assert free_at + len(slack) < NODE - (len(chunk) + 1) * 2
+            leaf[free_at:free_at + len(slack)] = slack
+            slack_location = leaf_id * NODE + free_at
+        image[catalog_address(leaf_id):catalog_address(leaf_id) + NODE] = leaf
+        for value, offset in zip(chunk, offsets):
+            kind = struct.unpack_from('>H', value, 2 + struct.unpack_from('>H', value)[0])[0]
+            if kind in (1, 2):
+                cnid = struct.unpack_from('>I', value, 10 + struct.unpack_from('>H', value)[0])[0]
+                locations[str(cnid)] = leaf_id * NODE + offset
+
+    deleted = [record(16, 'iNode5678', 50, payload('deleted_link_data'), payload('deleted_link_resource')),
+               link(2, 'unlinked.txt', 51, 5678), link(2, 'removed-but-linked.txt', 52, 1234),
+               thread(53, 2, 'thread-only.txt'), thread(54, 2, 'lost-dir', True),
+               record(54, 'child.txt', 55, payload('lost_child')),
+               record(2, 'old-a', 60, directory=True, created=epoch - 700),
+               record(2, 'old-b', 60, directory=True, created=epoch - 600),
+               record(60, 'ambiguous-child', 61, payload('ambiguous_child'))]
+    leaf, offsets, _ = node(-1, 1, deleted)
+    image[catalog_address(6):catalog_address(6) + NODE] = leaf
+    deleted_ids = dict(original['ids'])
+    deleted_ids['slack.txt'] = (1 << 63) | slack_location
+    deleted_locations = dict(original['deleted_locations'], **{'slack.txt': slack_location})
+    for value, offset in zip(deleted, offsets):
+        size = struct.unpack_from('>H', value)[0]
+        parent, nlen = struct.unpack_from('>IH', value, 2)
+        kind = struct.unpack_from('>H', value, size + 2)[0]
+        name = value[8:8 + nlen * 2].decode('utf-16be')
+        if kind in (3, 4):
+            v = size + 2
+            nlen = struct.unpack_from('>H', value, v + 8)[0]
+            name = value[v + 10:v + 10 + nlen * 2].decode('utf-16be')
+        if parent == 54 and kind in (1, 2):
+            name = 'lost-dir/' + name
+        deleted_ids[name] = (1 << 63) | (6 * NODE + offset)
+        deleted_locations[name] = 6 * NODE + offset
+
+    descriptor = 1024 + 272
+    image[descriptor:descriptor + 80] = fork(8 * NODE, [(20, 4 * NODE // block), (160, 4 * NODE // block)])
+    attrs = [inline_attribute(20, 'com.example.inline', b'inline attr\n'),
+             attribute_key(20, 'com.example.fragmented') + struct.pack('>II', 0x20, 0) + fork(600, [(139, 1)], 2),
+             attribute_key(20, 'com.example.fragmented', 1) + struct.pack('>II', 0x30, 0) + fork(0, [(141, 1)])[16:],
+             attribute_key(20, 'demo') + struct.pack('>II', 0x20, 0) + fork(9, [(122, 1)]),
+             inline_attribute(40, 'user.linked', b'linked attr\n')]
+    attrs.sort(key=lambda value: (struct.unpack_from('>I', value, 4)[0], value[14:struct.unpack_from('>H', value)[0] + 2],
+                                  struct.unpack_from('>I', value, 8)[0]))
+    image[52 * block:52 * block + NODE] = tree_header(3, 1, 1, len(attrs), 1, 1, [0, 1])
+    leaf, attr_offsets, _ = node(-1, 1, attrs)
+    image[52 * block + NODE:52 * block + 2 * NODE] = leaf
+    old = [attribute_key(30, 'user.deleted') + struct.pack('>II', 0x20, 0) + fork(14, [(142, 1)]),
+           inline_attribute(30, 'user.inline', b'deleted inline\n'),
+           attribute_key(20, 'user.removed') + struct.pack('>II', 0x20, 0) + fork(13, [(144, 1)]),
+           inline_attribute(30, 'user.history', b'one\n'), inline_attribute(30, 'user.history', b'two\n'),
+           inline_attribute(999, 'user.orphan', b'orphan attr\n'),
+           attribute_key(30, 'user.big') + struct.pack('>II', 0x20, 0) + fork(700, [(146, 1)], 2),
+           attribute_key(30, 'user.big', 1) + struct.pack('>II', 0x30, 0) + fork(0, [(148, 1)])[16:]]
+    leaf, old_offsets, _ = node(-1, 1, old)
+    image[192 * block:192 * block + NODE] = leaf
+    image[1024 + 352:1024 + 432] = fork(3 * NODE, [(52, 2 * NODE // block), (192, NODE // block)])
+    for number in list(range(160, 200)) + list(range(128, 135)) + [139, 141]:
+        image[3 * block + number // 8] |= 128 >> (number % 8)
+    image[139 * block:140 * block] = b'X' * block
+    image[141 * block:142 * block] = b'Y' * block
+    image[142 * block:142 * block + 14] = b'old attribute\n'
+    image[144 * block:144 * block + 13] = b'removed attr\n'
+    image[146 * block:147 * block] = b'G' * block
+    image[148 * block:149 * block] = b'H' * block
+    image[-1024:-512] = image[1024:1536]
+    info = dict(original, ids=deleted_ids, deleted_locations=deleted_locations, live_locations=locations, leaf_ids=leaf_ids,
+                active_attribute_locations=[NODE + offset for offset in attr_offsets],
+                old_attribute_locations=[2 * NODE + offset for offset in old_offsets])
+    return image, info
+
+
 def main():
     manifest = {}
     for name, block, sensitive in (('hfsplus', 512, False), ('hfsx', 512, True), ('hfsplus-4k', 4096, False)):
@@ -172,6 +337,10 @@ def main():
     struct.pack_into('>HHH', outer, 1024 + 124, 0x482b, 2, 32)
     (HERE / 'wrapped.img.gz').write_bytes(gzip.compress(outer, mtime=0))
     manifest['wrapped'] = dict(info, embedded_offset=16384)
+    image, info = build_names_forks()
+    (HERE / 'names-forks.img.gz').write_bytes(gzip.compress(image, mtime=0))
+    manifest['names-forks'] = info
+    print('names-forks', len(image), len(gzip.compress(image, mtime=0)), 'compressed bytes')
     (HERE / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
 
 

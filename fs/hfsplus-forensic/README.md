@@ -3,14 +3,16 @@
 Run `python3 generate.py` to regenerate these deterministic images. The generator
 uses only Python's standard library; it writes the documented HFS+ structures
 explicitly rather than mounting a volume or simulating a deletion on macOS.
-No expanded image is checked in. All four gzip images together are under 6 KiB.
+No expanded image is checked in. All five gzip images together are under 8 KiB.
 
 - `hfsplus.img.gz`: 128 KiB logical volume, 512-byte allocation blocks.
 - `hfsx.img.gz`: the same layout with HFSX signature/version and binary name comparison.
 - `hfsplus-4k.img.gz`: 1 MiB logical volume with 4096-byte allocation blocks.
 - `wrapped.img.gz`: the first volume embedded at byte 16384 in an HFS wrapper.
+- `names-forks.img.gz`: a 128 KiB volume extending the first layout with Unicode
+  names, file/directory hard links, retained threads and recoverable attributes.
 
-All B-tree nodes are 4096 bytes. The catalog has a header, an index, one live
+All B-tree nodes are 4096 bytes. In the original four images, the catalog has a header, an index, one live
 leaf and a free leaf retaining deleted records. Its header allocation map marks
 only the first three nodes allocated. Live-leaf slack also retains a deleted
 file record. The extents and attributes trees each have a header and a live leaf.
@@ -39,3 +41,21 @@ owns block 124. Block 126 is allocated without a current owner. Startup metadata
 owns block 68. A journal-info block at 69 describes an empty, checksummed journal
 in blocks 70 through 73. This deliberately small journal exercises the reader's
 clean-state and ownership checks; it is not an operating-system journal workload.
+
+The names/forks image adds a fragmented catalog and attributes file. Its
+`linked.txt` and `linked-again.txt` aliases share `iNode1234` in the private
+file-link directory; `linked-dir` resolves to `dir_41` in the private directory-link
+folder. Creation dates and Finder/BSD link metadata identify their backing
+records. Unicode cases cover decomposed Latin, Greek, Hangul and escaped path
+characters. `unlinked.txt` retains a deleted backing inode and resource fork;
+`removed-but-linked.txt` points to a surviving live inode and must not recover.
+Retained directory threads restore `lost-dir/child.txt`, while two conflicting
+directory versions leave `ambiguous-child` unattached. A file thread without its
+catalog file record supplies a name but no recoverable contents.
+
+The attributes tree contains live inline and fragmented external values,
+attributes on hard-link backing records, retained inline and nonresident values,
+two historical versions sharing a name, a removed attribute on a live file and
+an orphan inline attribute. The manifest records catalog and attribute-file
+logical locations for deterministic mutation tests. Stream IDs are enumerated
+from the mounted snapshot, separate from catalog candidate IDs.

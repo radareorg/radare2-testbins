@@ -87,5 +87,83 @@
       "slack.txt": 9223372036854784796
     },
     "embedded_offset": 16384
+  },
+  "names-forks": {
+    "block_size": 512,
+    "node_size": 4096,
+    "catalog": 10240,
+    "bitmap": 1536,
+    "overflow": 2048,
+    "attributes": 26624,
+    "live_location": 8636,
+    "fragmented_location": 8352,
+    "deleted_locations": {
+      "vanished.bin": 12302,
+      "gone": 12582,
+      "child.txt": 12686,
+      "slack.txt": 16674,
+      "iNode5678": 24590,
+      "unlinked.txt": 24864,
+      "removed-but-linked.txt": 25144,
+      "thread-only.txt": 25444,
+      "lost-dir": 25492,
+      "lost-dir/child.txt": 25526,
+      "old-a": 25800,
+      "old-b": 25906,
+      "ambiguous-child": 26012
+    },
+    "ids": {
+      "vanished.bin": 9223372036854788110,
+      "gone": 9223372036854788390,
+      "child.txt": 9223372036854788494,
+      "slack.txt": 9223372036854792482,
+      "iNode5678": 9223372036854800398,
+      "unlinked.txt": 9223372036854800672,
+      "removed-but-linked.txt": 9223372036854800952,
+      "thread-only.txt": 9223372036854801252,
+      "lost-dir": 9223372036854801300,
+      "lost-dir/child.txt": 9223372036854801334,
+      "old-a": 9223372036854801608,
+      "old-b": 9223372036854801714,
+      "ambiguous-child": 9223372036854801820
+    },
+    "live_locations": {
+      "2": 8206,
+      "16": 8352,
+      "17": 8490,
+      "43": 8644,
+      "21": 8918,
+      "23": 9202,
+      "24": 9490,
+      "22": 9766,
+      "20": 10042,
+      "46": 10314,
+      "44": 10596,
+      "45": 10862,
+      "40": 11130,
+      "41": 11404,
+      "42": 16398
+    },
+    "leaf_ids": [
+      2,
+      4
+    ],
+    "active_attribute_locations": [
+      4110,
+      4256,
+      4386,
+      4464,
+      4574
+    ],
+    "old_attribute_locations": [
+      8206,
+      8332,
+      8400,
+      8526,
+      8584,
+      8642,
+      8706,
+      8824
+    ]
   }
 }
