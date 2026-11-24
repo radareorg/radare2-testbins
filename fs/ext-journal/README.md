@@ -25,3 +25,12 @@ The journal superblock marks the active log empty, so recovery must inspect
 retained checkpointed records as well as the active replay log.
 
 Run `python3 generate.py` with e2fsprogs installed to rebuild the images.
+
+`python3 generate.py --names` builds the separate `ext3-names` and `ext4-names`
+fixtures and `names-manifest.json`. Each image is under 7 KiB compressed.
+Transaction 200 contains directory and inode records for `/archive/nested/report.txt`,
+its hard link `/archive/second.txt`, and `/archive/symlink`. Deleted names survive
+in directory slack. Transaction 201 renames `report.txt` to `renamed.txt`.
+The current image has `/current` instead of `/archive`, inode 13's size is zero,
+and its nested directory data is erased, requiring journal evidence to reconstruct
+the old paths. Inode 13's journal-resident contents remain recoverable at 200.

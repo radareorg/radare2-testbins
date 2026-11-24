@@ -6,6 +6,7 @@ import json
 import re
 import struct
 import subprocess
+import sys
 import tempfile
 
 HERE = Path(__file__).resolve().parent
@@ -31,7 +32,7 @@ def crc32be(data, crc=0xffffffff):
 def run(*args):
     return subprocess.run(args, check=True, capture_output=True, text=True).stdout
 
-def make(format_name, ext4=False, checksum=0):
+def make(format_name, ext4=False, checksum=0, names=False):
     with tempfile.TemporaryDirectory() as directory:
         temp = Path(directory)
         path = temp / 'image'
@@ -45,15 +46,29 @@ def make(format_name, ext4=False, checksum=0):
         victim = temp / 'victim'
         victim.write_bytes(b'Deleted through the journal\n')
         commands = temp / 'commands'
-        commands.write_text(f'write {live} /live\nwrite {victim} /victim\n')
+        commands.write_text(f'write {live} /live\nwrite {victim} /victim\n' + (
+            f'mkdir /archive\nmkdir /archive/nested\nlink /victim /archive/nested/report.txt\nunlink /victim\n'
+            f'link /archive/nested/report.txt /archive/second.txt\nsif <13> links_count 2\n'
+            f'symlink /archive/symlink nested/report.txt\nwrite {live} /archive/gone\nrm /archive/gone\n' if names else ''))
         run('debugfs', '-w', '-f', str(commands), str(path))
         old = bytearray(path.read_bytes())
-        victim_block = int(run('debugfs', '-R', 'bmap /victim 0', str(path)).strip())
+        victim_block = int(run('debugfs', '-R', 'bmap <13> 0', str(path)).strip())
         inode_size = struct.unpack_from('<H', old, 1024 + 88)[0]
         inode_table = struct.unpack_from('<I', old, 2048 + 8)[0]
         inode_offset = inode_table * BLOCK + 12 * inode_size
         inode_block = inode_offset // BLOCK
-        run('debugfs', '-w', '-R', 'rm /victim', str(path))
+        directories = {}
+        renamed = None
+        if names:
+            directories = {str(number): int(run('debugfs', '-R', f'bmap <{number}> 0', str(path)).strip()) for number in (2, 14, 15)}
+            commands.write_text('link /archive/nested/report.txt /archive/nested/renamed.txt\nunlink /archive/nested/report.txt\n')
+            run('debugfs', '-w', '-f', str(commands), str(path))
+            renamed = bytearray(path.read_bytes())
+            commands.write_text('rm /archive/nested/renamed.txt\nrm /archive/second.txt\nlink /archive /current\nunlink /archive\n')
+            run('debugfs', '-w', '-f', str(commands), str(path))
+            run('debugfs', '-w', '-R', f'zap_block -p 0 {directories["15"]}', str(path))
+        else:
+            run('debugfs', '-w', '-R', 'rm /victim', str(path))
         run('debugfs', '-w', '-R', 'sif <13> size 0', str(path))
         image = bytearray(path.read_bytes())
         commands.write_text(''.join(f'bmap <8> {i}\n' for i in range(32)))
@@ -130,6 +145,48 @@ def make(format_name, ext4=False, checksum=0):
                 store(cursor, tail(end, commit=True))
             return step(cursor)
 
+        if names:
+            records = {}
+            for number in (2, 12, 13, 14, 15, 16, 17):
+                block = (inode_table * BLOCK + (number - 1) * inode_size) // BLOCK
+                records[block] = old[block * BLOCK:(block + 1) * BLOCK]
+            for block in (*directories.values(), victim_block):
+                records[block] = old[block * BLOCK:(block + 1) * BLOCK]
+
+            def snapshot(number, sequence, records):
+                descriptor = metadata(1, sequence)
+                offset = 12
+                cursor = step(number)
+                payloads = {}
+                items = list(records.items())
+                for index, (target, data) in enumerate(items):
+                    flags = (2 if index else 0) | (8 if index + 1 == len(items) else 0)
+                    csum = crc32c(uuid + struct.pack('>I', sequence) + data)
+                    tag = struct.pack('>IIII', target, flags, 0, csum) if ext4 else struct.pack('>IHH', target, 0, flags)
+                    if not index:
+                        tag += uuid
+                    descriptor[offset:offset + len(tag)] = tag
+                    offset += len(tag)
+                    payloads[str(target)] = cursor
+                    store(cursor, data)
+                    cursor = step(cursor)
+                assert offset <= BLOCK - 4
+                store(number, tail(descriptor))
+                store(cursor, tail(metadata(2, sequence), commit=True))
+                return step(cursor), {'descriptor': number, 'payloads': payloads, 'commit': cursor}
+
+            cursor, first_snapshot = snapshot(1, 200, records)
+            block = directories['15']
+            cursor, second_snapshot = snapshot(cursor, 201, {block: renamed[block * BLOCK:(block + 1) * BLOCK]})
+            MANIFEST[format_name] = {'journal': mapping, 'inode_offset': inode_offset, 'inode_block': inode_block,
+                                     'victim_block': victim_block, 'inode_size': inode_size, 'checksum': checksum,
+                                     'ext4': ext4, 'directories': directories,
+                                     'snapshots': {'200': first_snapshot, '201': second_snapshot}}
+            destination = HERE / (format_name + '.img.gz')
+            destination.write_bytes(gzip.compress(image, mtime=0))
+            print(destination.name, destination.stat().st_size, 'bytes')
+            return
+
         cursor = transaction(1, 99, victim_block, old[victim_block * BLOCK:(victim_block + 1) * BLOCK])
         cursor = transaction(cursor, 100, inode_block, old[inode_block * BLOCK:(inode_block + 1) * BLOCK])
         payload = bytearray(BLOCK)
@@ -166,9 +223,15 @@ def make(format_name, ext4=False, checksum=0):
             (HERE / 'ext4-wrap-revoke.img.gz').write_bytes(gzip.compress(image, mtime=0))
             MANIFEST['ext4-wrap-revoke'] = dict(MANIFEST[format_name])
 
-make('ext3')
-make('ext3-crc', checksum=1)
-make('ext4-v2', ext4=True, checksum=2)
-make('ext4-v3', ext4=True, checksum=3)
-
-(HERE / 'manifest.json').write_text(json.dumps(MANIFEST, indent=2) + '\n')
+if __name__ == '__main__':
+    if sys.argv[1:] == ['--names']:
+        make('ext3-names', names=True)
+        make('ext4-names', ext4=True, checksum=3, names=True)
+        filename = 'names-manifest.json'
+    else:
+        make('ext3')
+        make('ext3-crc', checksum=1)
+        make('ext4-v2', ext4=True, checksum=2)
+        make('ext4-v3', ext4=True, checksum=3)
+        filename = 'manifest.json'
+    (HERE / filename).write_text(json.dumps(MANIFEST, indent=2) + '\n')
