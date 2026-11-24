@@ -1,0 +1,91 @@
+{
+  "hfsplus": {
+    "block_size": 512,
+    "node_size": 4096,
+    "catalog": 10240,
+    "bitmap": 1536,
+    "overflow": 2048,
+    "attributes": 26624,
+    "live_location": 8636,
+    "fragmented_location": 8352,
+    "deleted_locations": {
+      "vanished.bin": 12302,
+      "gone": 12582,
+      "child.txt": 12686,
+      "slack.txt": 8988
+    },
+    "ids": {
+      "vanished.bin": 9223372036854788110,
+      "gone": 9223372036854788390,
+      "child.txt": 9223372036854788494,
+      "slack.txt": 9223372036854784796
+    }
+  },
+  "hfsx": {
+    "block_size": 512,
+    "node_size": 4096,
+    "catalog": 10240,
+    "bitmap": 1536,
+    "overflow": 2048,
+    "attributes": 26624,
+    "live_location": 8636,
+    "fragmented_location": 8352,
+    "deleted_locations": {
+      "vanished.bin": 12302,
+      "gone": 12582,
+      "child.txt": 12686,
+      "slack.txt": 8988
+    },
+    "ids": {
+      "vanished.bin": 9223372036854788110,
+      "gone": 9223372036854788390,
+      "child.txt": 9223372036854788494,
+      "slack.txt": 9223372036854784796
+    }
+  },
+  "hfsplus-4k": {
+    "block_size": 4096,
+    "node_size": 4096,
+    "catalog": 81920,
+    "bitmap": 12288,
+    "overflow": 16384,
+    "attributes": 212992,
+    "live_location": 8636,
+    "fragmented_location": 8352,
+    "deleted_locations": {
+      "vanished.bin": 12302,
+      "gone": 12582,
+      "child.txt": 12686,
+      "slack.txt": 8988
+    },
+    "ids": {
+      "vanished.bin": 9223372036854788110,
+      "gone": 9223372036854788390,
+      "child.txt": 9223372036854788494,
+      "slack.txt": 9223372036854784796
+    }
+  },
+  "wrapped": {
+    "block_size": 512,
+    "node_size": 4096,
+    "catalog": 10240,
+    "bitmap": 1536,
+    "overflow": 2048,
+    "attributes": 26624,
+    "live_location": 8636,
+    "fragmented_location": 8352,
+    "deleted_locations": {
+      "vanished.bin": 12302,
+      "gone": 12582,
+      "child.txt": 12686,
+      "slack.txt": 8988
+    },
+    "ids": {
+      "vanished.bin": 9223372036854788110,
+      "gone": 9223372036854788390,
+      "child.txt": 9223372036854788494,
+      "slack.txt": 9223372036854784796
+    },
+    "embedded_offset": 16384
+  }
+}
