@@ -145,6 +145,12 @@ def make(format_name, ext4=False, checksum=0):
         destination = HERE / (format_name + '.img.gz')
         destination.write_bytes(gzip.compress(image, mtime=0))
         print(destination.name, destination.stat().st_size, 'bytes; inode 13 in block', inode_block)
+        if format_name in ('ext3', 'ext4-v3'):
+            metadata_only = bytearray(image)
+            for number in (1, 2, 3):
+                metadata_only[mapping[number] * BLOCK:(mapping[number] + 1) * BLOCK] = bytes(BLOCK)
+            name = 'ext4-metadata' if ext4 else 'ext3-metadata'
+            (HERE / (name + '.img.gz')).write_bytes(gzip.compress(metadata_only, mtime=0))
         if format_name == 'ext4-v3':
             image = base_image
             payload = bytearray(BLOCK)

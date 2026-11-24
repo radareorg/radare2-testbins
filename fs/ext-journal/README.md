@@ -12,6 +12,9 @@ mappings for mutation tests.
 - `ext4-v3`: 64-bit JBD2 tags and checksum v3.
 - `ext4-wrap`: a committed transaction crossing the ring boundary.
 - `ext4-wrap-revoke`: the revoke block precedes a descriptor across the boundary.
+- `ext3-metadata` and `ext4-metadata`: transaction 99's file data is absent
+  from the journal, but its freed disk block still contains the original bytes.
+  The historical inode in transaction 100 is needed to recover its former size.
 
 The normal fixtures contain committed transaction 99 with an old file-data
 block, transaction 100 with the inode-table block containing inode 13, an escaped
