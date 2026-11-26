@@ -1,0 +1,84 @@
+{
+  "hfs": {
+    "block": 512,
+    "allocation": 2560,
+    "bitmap": 1536,
+    "catalog": 8704,
+    "overflow": 4608,
+    "locations": {
+      "22": 1178,
+      "slack.txt": 3204,
+      "vanished.bin": 2062,
+      "gone": 2184,
+      "child.txt": 2266,
+      "thread-only": 2574,
+      "lost-dir": 2628,
+      "lost-child": 2682,
+      "name-thread": 2802
+    },
+    "catalog_slack": [
+      [
+        1292,
+        236
+      ],
+      [
+        1788,
+        254
+      ],
+      [
+        3204,
+        376
+      ]
+    ],
+    "ids": {
+      "vanished.bin": 9223372036854777870,
+      "gone": 9223372036854777992,
+      "child.txt": 9223372036854778074,
+      "slack.txt": 9223372036854779012,
+      "thread-only": 9223372036854778382,
+      "lost-dir": 9223372036854778436,
+      "lost-child": 9223372036854778490
+    }
+  },
+  "hfs-1536": {
+    "block": 1536,
+    "allocation": 2560,
+    "bitmap": 1536,
+    "catalog": 20992,
+    "overflow": 8704,
+    "locations": {
+      "22": 1178,
+      "slack.txt": 3204,
+      "vanished.bin": 2062,
+      "gone": 2184,
+      "child.txt": 2266,
+      "thread-only": 2574,
+      "lost-dir": 2628,
+      "lost-child": 2682,
+      "name-thread": 2802
+    },
+    "catalog_slack": [
+      [
+        1292,
+        236
+      ],
+      [
+        1788,
+        254
+      ],
+      [
+        3204,
+        376
+      ]
+    ],
+    "ids": {
+      "vanished.bin": 9223372036854777870,
+      "gone": 9223372036854777992,
+      "child.txt": 9223372036854778074,
+      "slack.txt": 9223372036854779012,
+      "thread-only": 9223372036854778382,
+      "lost-dir": 9223372036854778436,
+      "lost-child": 9223372036854778490
+    }
+  }
+}
