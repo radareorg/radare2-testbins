@@ -1,17 +1,35 @@
-# Classic HFS recovery fixtures
+# Compact classic HFS forensic fixtures
 
-Run `python3 generate.py` to regenerate both images and `manifest.json` without
-platform tools. The images use 512-byte B-tree nodes, 128 allocation blocks and
-an allocation origin at byte 2560. `hfs.img.gz` uses 512-byte allocation blocks;
-`hfs-1536.img.gz` uses 1536-byte blocks to exercise non-power-of-two geometry.
+Run `python3 generate.py` to recreate these deterministic volumes using Python's
+standard library. No mounting, macOS tools or expanded image is needed. Both
+gzip images together occupy less than 2 KiB.
 
-The live catalog contains an empty file, a MacRoman filename, fragmented data,
-and a file with data/resource fork slack. Free catalog nodes retain a deleted
-file with an overflow extent and resource fork, a directory and child, and
-file/directory threads with missing catalog records. An allocated leaf retains
-`slack.txt` beyond its last active record. Allocation bits distinguish live
-storage, orphan blocks, bad blocks and free space containing a search marker.
+- `hfs.img.gz`: 128 allocation blocks of 512 bytes, with a 512-byte B-tree node size.
+- `hfs-1536.img.gz`: the same records with 1536-byte allocation blocks. The
+  allocation area starts at sector 5, testing non-aligned allocation origins.
 
-These fixtures serve `test/db/cmd/cmd_fs_hfs_forensic` and
-`test/scripts/test-hfs-io.py` in radare2. The manifest records geometry, catalog
-locations and recovery IDs so the I/O tests can mutate precise metadata fields.
+The catalog has an index and three live leaves. Free leaves retain deleted
+file/folder records and threads; live-leaf slack retains another deleted file.
+The extents-overflow tree has current file/bad-block mappings and one retained
+deleted-file continuation. The manifest records logical catalog locations,
+candidate IDs, allocation geometry and exact active-leaf slack regions.
+
+Live catalog records include `live.txt` (CNID 20), a four-fragment file (21),
+MacRoman `café` (22) and an empty file (23). The live file has a resource fork,
+tail slack and an additional preallocated block beyond logical EOF.
+
+Deleted `vanished.bin` (CNID 30) has three inline fragments and a retained
+overflow fragment, plus a resource fork. A file thread preserves its name even
+after the catalog key's name length is cleared. Other evidence includes
+`gone/child.txt`, `lost-dir/lost-child`, `slack.txt` and a file thread whose
+file record no longer survives. The last supplies a name, not file contents.
+
+Block 94 belongs to the bad-block file; block 96 is allocated without a live
+owner. Free block 100 contains `FREE HFS EVIDENCE\n`. Data/resource/slack blocks
+are distinct so mutation tests can check allocation reuse and hidden ownership
+independently. A copy of the MDB near the end of each image supports tests of
+alternate volume metadata recovery.
+
+In radare2, `test/db/cmd/cmd_fs_hfs_forensic` checks the command output and
+`test/scripts/test-hfs-io.py` uses the manifest to exercise reads and recovery
+after changing specific metadata fields.
