@@ -3,7 +3,7 @@
 Run `python3 generate.py` to regenerate these deterministic images. The generator
 uses only Python's standard library; it writes the documented HFS+ structures
 explicitly rather than mounting a volume or simulating a deletion on macOS.
-No expanded image is checked in. All five gzip images together are under 8 KiB.
+No expanded image is checked in. All six gzip images together are under 9 KiB.
 
 - `hfsplus.img.gz`: 128 KiB logical volume, 512-byte allocation blocks.
 - `hfsx.img.gz`: the same layout with HFSX signature/version and binary name comparison.
@@ -11,6 +11,8 @@ No expanded image is checked in. All five gzip images together are under 8 KiB.
 - `wrapped.img.gz`: the first volume embedded at byte 16384 in an HFS wrapper.
 - `names-forks.img.gz`: a 128 KiB volume extending the first layout with Unicode
   names, file/directory hard links, retained threads and recoverable attributes.
+- `journal.img.gz`: a 128 KiB volume with two checksummed historical catalog
+  versions, separate overflow extents, resource forks and directory ancestry.
 
 All B-tree nodes are 4096 bytes. In the original four images, the catalog has a header, an index, one live
 leaf and a free leaf retaining deleted records. Its header allocation map marks
@@ -59,3 +61,18 @@ two historical versions sharing a name, a removed attribute on a live file and
 an orphan inline attribute. The manifest records catalog and attribute-file
 logical locations for deterministic mutation tests. Stream IDs are enumerated
 from the mounted snapshot, separate from catalog candidate IDs.
+
+The journal image relocates its internal journal to blocks 128 through 223.
+Two completed transactions (sequences 41 and 42) retain `journal.bin` (CNID 40),
+`history-dir` (CNID 41) and `history-dir/child.txt` (CNID 42). The first eight data
+blocks are shared; same-transaction overflow records select block 116 (`I`) or
+117 (`Z`) as the ninth block. Separate resource forks use blocks 118 and 119.
+The historical tree targets are the current catalog's free leaf and the current
+overflow leaf; their live on-disk versions are not replaced. Journal candidates
+receive mounted-snapshot IDs with bits 63 and 62 set. The generator also builds
+wrapped, little-endian, pending and continuation-header variants in memory for
+the scripted tests. The journal fixture compresses to 1,354 bytes.
+
+Journal layout and checksum rules follow Apple's published
+[journal structures](https://github.com/apple-oss-distributions/hfs/blob/main/core/hfs_journal.h)
+and [journal implementation](https://github.com/apple-oss-distributions/hfs/blob/main/core/hfs_journal.c).

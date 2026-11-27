@@ -322,6 +322,69 @@ def build_names_forks():
     return image, info
 
 
+def journal_chunk(blocks, sequence, little=False, first=True, sector=512):
+    order = '<' if little else '>'
+    header = bytearray(sector)
+    struct.pack_into(order + 'HHIII', header, 0, sector // 16 - 1, len(blocks) + 1,
+                     sector + sum(len(data) for _, data in blocks), 0, 1 | (2 if first else 0))
+    struct.pack_into(order + 'I', header, 28, sequence)
+    for index, (target, data) in enumerate(blocks, 1):
+        struct.pack_into(order + 'QII', header, 16 + index * 16, target // sector, len(data), checksum(data))
+    struct.pack_into(order + 'I', header, 8, checksum(header[:32]))
+    return header + b''.join(data for _, data in blocks)
+
+
+def build_journal(block=512, sensitive=False, little=False, pending=False, wrap=False, split=False):
+    image, info = build(block, sensitive)
+    sector = 512
+    offset, size = 128 * block, 96 * block
+    struct.pack_into('>QQ', image, 69 * block + 36, offset, size)
+    for bit in range(128, 224):
+        image[3 * block + bit // 8] |= 128 >> (bit % 8)
+    order = '<' if little else '>'
+    position = size - 2 * sector if wrap else sector
+    first = position
+    chunks = []
+    for version, sequence in enumerate((41, 42)):
+        mappings = [(100 + index * 2, 1) for index in range(8)]
+        data = fork(9 * block, mappings, 9)
+        resource = b'Journal resource ' + (b'one' if not version else b'two') + b'\n'
+        image[(118 + version) * block:(118 + version) * block + len(resource)] = resource
+        records = [catalog_record(2, 'journal.bin', 40, data, fork(len(resource), [(118 + version, 1)])),
+                   catalog_record(2, 'history-dir', 41, directory=True),
+                   catalog_record(41, 'child.txt', 42, fork(6, [(115, 1)]))]
+        leaf = node(-1, 1, records)[0]
+        overflow = struct.pack('>HBBII', 10, 0, 0, 40, 8) + fork(0, [(116 + version, 1)])[16:]
+        extra = node(-1, 1, [overflow])[0]
+        targets = [(info['catalog'] + 3 * NODE, leaf), (info['overflow'] + NODE, extra)]
+        if split:
+            parts = [[(targets[0][0] + index * sector, leaf[index * sector:(index + 1) * sector])]
+                     for index in range(NODE // sector)] + [[targets[1]]]
+        else:
+            parts = [targets]
+        for index, items in enumerate(parts):
+            payload = journal_chunk(items, sequence, little, index == 0, sector)
+            chunks.append({'position': position, 'sequence': sequence, 'size': len(payload)})
+            for byte in payload:
+                image[offset + position] = byte
+                position += 1
+                if position == size:
+                    position = sector
+    journal = bytearray(48)
+    struct.pack_into(order + 'IIQQQIIII', journal, 0, 0x4a4e4c78, 0x12345678,
+                     first if pending else position, position, size, sector, 0, sector, 42)
+    struct.pack_into(order + 'I', journal, 36, checksum(journal[:44]))
+    image[offset:offset + 48] = journal
+    for index in range(8):
+        start = (100 + index * 2) * block
+        image[start:start + block] = bytes([65 + index]) * block
+    image[116 * block:117 * block] = b'I' * block
+    image[117 * block:118 * block] = b'Z' * block
+    image[115 * block:115 * block + 6] = b'child\n'
+    return image, dict(info, journal_offset=offset, journal_size=size,
+                       journal_start=first, journal_end=position, journal_chunks=chunks)
+
+
 def main():
     manifest = {}
     for name, block, sensitive in (('hfsplus', 512, False), ('hfsx', 512, True), ('hfsplus-4k', 4096, False)):
@@ -341,6 +404,10 @@ def main():
     (HERE / 'names-forks.img.gz').write_bytes(gzip.compress(image, mtime=0))
     manifest['names-forks'] = info
     print('names-forks', len(image), len(gzip.compress(image, mtime=0)), 'compressed bytes')
+    image, info = build_journal()
+    (HERE / 'journal.img.gz').write_bytes(gzip.compress(image, mtime=0))
+    manifest['journal'] = info
+    print('journal', len(image), len(gzip.compress(image, mtime=0)), 'compressed bytes')
     (HERE / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
 
 
